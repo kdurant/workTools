@@ -3,8 +3,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
-from readDiskWidget import *
-from eraseDiskWidget import *
+from src.erase.eraseDiskWidget import *
+from src.read.readDiskWidget import *
 
 class Top(QMainWindow):
     def __init__(self):
