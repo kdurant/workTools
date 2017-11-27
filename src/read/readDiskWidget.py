@@ -3,27 +3,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from binascii import b2a_hex, a2b_hex
+from ..misc.misc import *
 
 FILE_UNIT = 0x5000
 
-
-def readSector(drive, sector, data_len=512, mode='rb'):
-    '''
-    :param drive: 需要读取的硬盘
-    :param sector: 需要读取的扇区编号
-    :param data_len: 每次读取多少数据
-    :param mode: 返回数据格式
-    :return: 扇区数据
-    '''
-    drive.seek(sector * 512)
-    data = drive.read(data_len)
-
-    if mode == 'rb':
-        return data
-    elif mode == 'str':
-        return data.hex()
-    else:
-        return
 
 class WriteData(QObject):
     fileWriteDone = pyqtSignal()
@@ -92,7 +75,7 @@ class ReadDiskWidget(QWidget):
         self.setLayout(mainLayout)
     def ctrlUI(self):
         self.diskReadComb = QComboBox()
-        self.diskReadComb.addItems(self.diskInfo())
+        self.diskReadComb.addItems(diskInfo())
         self.anaylzeBtn = QPushButton('分析有效文件')
         self.saveBtn = QPushButton('保存')
 
@@ -139,22 +122,6 @@ class ReadDiskWidget(QWidget):
                     return
                 else:
                     self.fileInfoReady.emit(info)
-
-    @staticmethod
-    def diskInfo():
-        info = ['\\\\.\\PHYSICALDRIVE2']
-        # disk = open('\\\\.\\PHYSICALDRIVE0', 'rb')
-        # try:
-        #     disk = open('\\\\.\\PHYSICALDRIVE0', 'rb')
-        # except PermissionError:
-        #     info.append('\\\\.\\PHYSICALDRIVE0')
-        # try:
-        #     disk = open('\\\\.\\PHYSICALDRIVE1', 'rb')
-        # except PermissionError:
-        #     info.append('\\\\.\\PHYSICALDRIVE1')
-
-        return info
-
 
     def findFileName(self, disk, addr):
         '''

@@ -2,6 +2,7 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from ..misc.misc import *
 
 FILE_UNIT = 0x5000
 
@@ -15,7 +16,7 @@ class EraseDiskWidget(QWidget):
 
     def initUI(self):
         self.diskSelectComb = QComboBox()
-        self.diskSelectComb.addItems(self.diskInfo())
+        self.diskSelectComb.addItems(diskInfo())
         self.eraseBtn = QPushButton('擦除文件名区域')
 
         self.label = QLabel('擦除进度：')
@@ -39,19 +40,6 @@ class EraseDiskWidget(QWidget):
         else:
             pass
 
-    @staticmethod
-    def diskInfo():
-        info = []
-        try:
-            disk = open('\\\\.\\PHYSICALDRIVE0', 'rb')
-        except PermissionError:
-            info.append('\\\\.\\PHYSICALDRIVE0')
-        try:
-            disk = open('\\\\.\\PHYSICALDRIVE1', 'rb')
-        except PermissionError:
-            info.append('\\\\.\\PHYSICALDRIVE1')
-
-        return info
 
     def eraseSector(self):
         import time
