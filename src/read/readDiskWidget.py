@@ -118,6 +118,7 @@ class ReadDiskWidget(QWidget):
         data = self.readSector(disk, addr*32, data_len=128, mode='rb')
         if data.find(b'\xff') == -1:
             fileName = data.decode('utf8')
+            fileName = fileName.replace('\0', '')
             data = self.readSector(disk, (addr+ 1)*32 , data_len=8, mode='rb')  # 读取文件起始地址，结束地址信息
             fileStartAddr = b2a_hex(data[:4]).decode()
             fileEndAddr = b2a_hex(data[4:8]).decode()
@@ -146,14 +147,15 @@ class ReadDiskWidget(QWidget):
         items = self.table.selectedItems()
 
         fileName = items[0].text()
-        fileStartUnit = items[0].text()
-        fileEndUnit = items[0].text()
+        fileStartUnit = int(items[1].text(), 16)
+        fileEndUnit = int(items[2].text(), 16)
 
-        file = open(fileName, 'w')
-        disk = open(self.diskReadComb.setCurrentText(), 'rb')
-        data = self.readSector(self, disk, fileStartUnit*16, data_len=512*32*(fileEndUnit-fileStartUnit), mode='rb')
+        file = open(fileName + '.bin', 'wb')
+        disk = open(self.diskReadComb.currentText(), 'rb')
+        data = self.readSector(disk, fileStartUnit*32, data_len=32*(fileEndUnit-fileStartUnit)*512, mode='rb')
         file.write(data)
         file.close()
+        disk.close()
         # for i in range(fileStartUnit, fileEndUnit):
         #     data = self.readSector(self, disk, i*16, data_len=512*32, mode='rb')
         #     file.write(data)
