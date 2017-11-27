@@ -5,8 +5,55 @@ from PyQt5.QtGui import *
 from binascii import b2a_hex, a2b_hex
 
 FILE_UNIT = 0x5000
+
+
+def readSector(drive, sector, data_len=512, mode='rb'):
+    '''
+    :param drive: 需要读取的硬盘
+    :param sector: 需要读取的扇区编号
+    :param data_len: 每次读取多少数据
+    :param mode: 返回数据格式
+    :return: 扇区数据
+    '''
+    drive.seek(sector * 512)
+    data = drive.read(data_len)
+
+    if mode == 'rb':
+        return data
+    elif mode == 'str':
+        return data.hex()
+    else:
+        return
+
+class WriteData(QObject):
+    fileWriteDone = pyqtSignal()
+    def __init__(self):
+        super(WriteData, self).__init__()
+
+    def config(self, diskName, item):
+        self.diskName = diskName
+        self.items = item
+        pass
+
+    def saveFile(self):
+        fileName = self.items[0].text()
+        fileStartUnit = int(self.items[1].text(), 16)
+        fileEndUnit = int(self.items[2].text(), 16)
+
+        file = open(fileName + '.bin', 'wb')
+        disk = open(self.diskName, 'rb')
+
+        for addr in range(fileStartUnit, fileEndUnit):
+            data = readSector(disk, addr*32, data_len=32*512, mode='rb')
+            file.write(data)
+        file.close()
+        disk.close()
+        self.fileWriteDone.emit()
+
 class ReadDiskWidget(QWidget):
     fileInfoReady = pyqtSignal(list)
+    startWriteFile = pyqtSignal()
+
     def __init__(self):
         super(ReadDiskWidget, self).__init__()
 
@@ -15,6 +62,15 @@ class ReadDiskWidget(QWidget):
         self.fileInfoReady[list].connect(self.addFileInfo)
         self.anaylzeBtn.clicked.connect(self.anaylzeFileName)
         self.saveBtn.clicked.connect(self.saveFile)
+
+        self.writeThread = QThread()
+        self.writeFile = WriteData()
+
+        self.writeFile.moveToThread(self.writeThread)
+        self.writeThread.start()
+
+        self.startWriteFile.connect(self.writeFile.saveFile)
+        self.writeFile.fileWriteDone.connect(self.fileHint)
 
     def initUI(self):
         leftFrame = self.ctrlUI()
@@ -91,23 +147,6 @@ class ReadDiskWidget(QWidget):
 
         return info
 
-    def readSector(self, drive, sector, data_len=512, mode='rb'):
-        '''
-        :param drive: 需要读取的硬盘
-        :param sector: 需要读取的扇区编号
-        :param data_len: 每次读取多少数据
-        :param mode: 返回数据格式
-        :return: 扇区数据
-        '''
-        drive.seek(sector * 512)
-        data = drive.read(data_len)
-
-        if mode == 'rb':
-            return data
-        elif mode == 'str':
-            return data.hex()
-        else:
-            return
 
     def findFileName(self, disk, addr):
         '''
@@ -115,11 +154,11 @@ class ReadDiskWidget(QWidget):
         :param addr: 地址为unit地址，需要转换为sector地址 sector = unit * 32
         :return:
         '''
-        data = self.readSector(disk, addr*32, data_len=128, mode='rb')
+        data = readSector(disk, addr*32, data_len=128, mode='rb')
         if data.find(b'\xff') == -1:
             fileName = data.decode('utf8')
             fileName = fileName.replace('\0', '')
-            data = self.readSector(disk, (addr+ 1)*32 , data_len=8, mode='rb')  # 读取文件起始地址，结束地址信息
+            data = readSector(disk, (addr+ 1)*32 , data_len=8, mode='rb')  # 读取文件起始地址，结束地址信息
             fileStartAddr = b2a_hex(data[:4]).decode()
             fileEndAddr = b2a_hex(data[4:8]).decode()
             fileInfo = [fileName, fileStartAddr, fileEndAddr]
@@ -144,21 +183,9 @@ class ReadDiskWidget(QWidget):
 
     @pyqtSlot()
     def saveFile(self):
-        items = self.table.selectedItems()
+        self.writeFile.config(self.diskReadComb.currentText(), self.table.selectedItems())
+        self.startWriteFile.emit()
 
-        fileName = items[0].text()
-        fileStartUnit = int(items[1].text(), 16)
-        fileEndUnit = int(items[2].text(), 16)
-
-        file = open(fileName + '.bin', 'wb')
-        disk = open(self.diskReadComb.currentText(), 'rb')
-        data = self.readSector(disk, fileStartUnit*32, data_len=32*(fileEndUnit-fileStartUnit)*512, mode='rb')
-        file.write(data)
-        file.close()
-        disk.close()
-        # for i in range(fileStartUnit, fileEndUnit):
-        #     data = self.readSector(self, disk, i*16, data_len=512*32, mode='rb')
-        #     file.write(data)
-
-        # count = items.count()
-        # print(count)
+    @pyqtSlot()
+    def fileHint(self):
+        QMessageBox.information(self, '信息', '文件写入成功')
