@@ -2,6 +2,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from binascii import b2a_hex, a2b_hex
+
 FILE_UNIT = 0x5000
 class ReadDiskWidget(QWidget):
     fileInfoReady = pyqtSignal(list)
@@ -61,28 +63,31 @@ class ReadDiskWidget(QWidget):
         return frame
 
     def anaylzeFileName(self):
-
-        self.addFileInfo(['12345', '5000', '10000'])
-        # disk = open(self.diskReadComb.setCurrentText(), 'rb')
-        # for unitAddr in range(0, FILE_UNIT-1):
-        #     if unitAddr % 2 == 0:
-        #         info = self.findFileName(disk, unitAddr)
-        #         if info == False:
-        #             return
-        #         else:
-        #             self.fileInfoReady.emit(info)
+        try:
+            file = self.diskReadComb.currentText()
+            disk = open(file, 'rb')
+        except:
+            print('error')
+        for unitAddr in range(0, FILE_UNIT-1):
+            if unitAddr % 2 == 0:
+                info = self.findFileName(disk, unitAddr)
+                if info == False:
+                    return
+                else:
+                    self.fileInfoReady.emit(info)
 
     @staticmethod
     def diskInfo():
-        info = []
-        try:
-            disk = open('\\\\.\\PHYSICALDRIVE0', 'rb')
-        except PermissionError:
-            info.append('\\\\.\\PHYSICALDRIVE0')
-        try:
-            disk = open('\\\\.\\PHYSICALDRIVE1', 'rb')
-        except PermissionError:
-            info.append('\\\\.\\PHYSICALDRIVE1')
+        info = ['\\\\.\\PHYSICALDRIVE2']
+        # disk = open('\\\\.\\PHYSICALDRIVE0', 'rb')
+        # try:
+        #     disk = open('\\\\.\\PHYSICALDRIVE0', 'rb')
+        # except PermissionError:
+        #     info.append('\\\\.\\PHYSICALDRIVE0')
+        # try:
+        #     disk = open('\\\\.\\PHYSICALDRIVE1', 'rb')
+        # except PermissionError:
+        #     info.append('\\\\.\\PHYSICALDRIVE1')
 
         return info
 
@@ -105,16 +110,21 @@ class ReadDiskWidget(QWidget):
             return
 
     def findFileName(self, disk, addr):
-        data = self.readSector(disk, addr, data_len=512, mode='rb')
-        if data.find(b'ffff') == -1:
-            return False
-        else:
+        '''
+        :param disk:
+        :param addr: 地址为unit地址，需要转换为sector地址 sector = unit * 32
+        :return:
+        '''
+        data = self.readSector(disk, addr*32, data_len=128, mode='rb')
+        if data.find(b'\xff') == -1:
             fileName = data.decode('utf8')
-            data = self.readSector(disk, addr+1, data_len=512, mode='rb')
-            fileStartAddr = data[:8].decode('utf8')
-            fileEndAddr = data[8:16].decode('utf8')
+            data = self.readSector(disk, (addr+ 1)*32 , data_len=8, mode='rb')  # 读取文件起始地址，结束地址信息
+            fileStartAddr = b2a_hex(data[:4]).decode()
+            fileEndAddr = b2a_hex(data[4:8]).decode()
             fileInfo = [fileName, fileStartAddr, fileEndAddr]
             return fileInfo
+        else:
+            return False
 
     @pyqtSlot(list)
     def addFileInfo(self, info):
@@ -126,8 +136,10 @@ class ReadDiskWidget(QWidget):
             item.setText(info[i])
             self.table.setItem(rowIndex, i, item)
 
+        fileSize = (int(info[2], 16)-int(info[1], 16))*16/(1024*1024)
         item = QTableWidgetItem()
-        item.setText('1gb')
+        item.setText(str(fileSize)[:5])
+        self.table.setItem(rowIndex, 3, item)
 
     @pyqtSlot()
     def saveFile(self):
