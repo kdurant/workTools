@@ -36,15 +36,17 @@ class EraseDiskWidget(QWidget):
         reply = QMessageBox.critical(self, 'Critical', '擦除文件名区域', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            self.eraseSector()
+            self.initFileNameRegion()
         else:
             pass
 
 
-    def eraseSector(self):
-        import time
-        for i in range(0, FILE_UNIT):
-            time.sleep(0.001)
-            print(i)
-            self.progress.setValue(i)
+    def initFileNameRegion(self):
+        file = self.diskSelectComb.currentText()
+        disk = open(file, 'rb+')
+        eraserSector(disk, 0 * 32, b'\xff', 4)
+        # for addr in range(0, FILE_UNIT):
+        #     eraserSector(disk, addr*32, b'\xff', 256)
+        #     self.progress.setValue(addr)
+        disk.close()
         pass

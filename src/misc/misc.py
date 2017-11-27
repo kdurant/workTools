@@ -35,3 +35,12 @@ def readSector(drive, sector, data_len=512, mode='rb'):
         return data.hex()
     else:
         return
+
+def eraserSector(drive, sector, data, data_len=512):
+    '''
+    :param drive: 需要写入数据的硬盘
+    :param sector: 需要写入的扇区编号
+    :param data:
+    '''
+    drive.seek(sector * 512)
+    drive.write(data*data_len)
