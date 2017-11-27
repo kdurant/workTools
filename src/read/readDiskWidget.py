@@ -29,6 +29,7 @@ class WriteData(QObject):
     fileWriteDone = pyqtSignal()
     def __init__(self):
         super(WriteData, self).__init__()
+        self.currentAddr = 0
 
     def config(self, diskName, item):
         self.diskName = diskName
@@ -44,6 +45,7 @@ class WriteData(QObject):
         disk = open(self.diskName, 'rb')
 
         for addr in range(fileStartUnit, fileEndUnit):
+            self.currentAddr = addr
             data = readSector(disk, addr*32, data_len=32*512, mode='rb')
             file.write(data)
         file.close()
@@ -58,6 +60,11 @@ class ReadDiskWidget(QWidget):
         super(ReadDiskWidget, self).__init__()
 
         self.initUI()
+
+        self.timer = QTimer()
+        self.timer.start(100)
+
+        self.timer.timeout.connect(self.setProgress)
 
         self.fileInfoReady[list].connect(self.addFileInfo)
         self.anaylzeBtn.clicked.connect(self.anaylzeFileName)
@@ -183,9 +190,15 @@ class ReadDiskWidget(QWidget):
 
     @pyqtSlot()
     def saveFile(self):
+        self.progress.setMinimum(int(self.table.selectedItems()[1].text(), 16))
+        self.progress.setMaximum(int(self.table.selectedItems()[2].text(), 16)-1)
         self.writeFile.config(self.diskReadComb.currentText(), self.table.selectedItems())
         self.startWriteFile.emit()
 
     @pyqtSlot()
     def fileHint(self):
         QMessageBox.information(self, '信息', '文件写入成功')
+
+    @pyqtSlot()
+    def setProgress(self):
+        self.progress.setValue(self.writeFile.currentAddr)
