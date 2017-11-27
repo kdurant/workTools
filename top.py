@@ -31,6 +31,7 @@ class Top(QMainWindow):
         mainWidget = QWidget()
         mainWidget.setLayout(mainLayout)
         self.setCentralWidget(mainWidget)
+        self.resize(640, 500)
         pass
 
     def createToolBar(self):
@@ -55,4 +56,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     ui = Top()
     ui.show()
+
+    try:
+        import qss.qss
+        ui.setStyleSheet(qss.qss.style)
+    except:
+        pass
     sys.exit(app.exec_())

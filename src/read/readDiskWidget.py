@@ -96,7 +96,7 @@ class ReadDiskWidget(QWidget):
         self.anaylzeBtn = QPushButton('分析有效文件')
         self.saveBtn = QPushButton('保存')
 
-        self.label = QLabel('文件读取进度：')
+        self.label = QLabel('文件写入进度：')
         self.progress = QProgressBar()
         self.progress.setMaximum(FILE_UNIT-1)
         self.progress.setMinimum(0)
@@ -104,6 +104,7 @@ class ReadDiskWidget(QWidget):
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.diskReadComb)
         mainLayout.addWidget(self.anaylzeBtn)
+        mainLayout.addStretch(1)
         mainLayout.addWidget(self.saveBtn)
         mainLayout.addWidget(self.label)
         mainLayout.addWidget(self.progress)
@@ -113,7 +114,7 @@ class ReadDiskWidget(QWidget):
         return frame
 
     def fileInfoUI(self):
-        self.table = QTableWidget(0, 5)
+        self.table = QTableWidget(0, 4)
         self.table.setHorizontalHeaderLabels(['文件名', '起始unit', '结束unit', '文件大小'])
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
@@ -188,12 +189,18 @@ class ReadDiskWidget(QWidget):
         item.setText(str(fileSize)[:5])
         self.table.setItem(rowIndex, 3, item)
 
+        self.table.resizeColumnsToContents()
+
     @pyqtSlot()
     def saveFile(self):
-        self.progress.setMinimum(int(self.table.selectedItems()[1].text(), 16))
-        self.progress.setMaximum(int(self.table.selectedItems()[2].text(), 16)-1)
-        self.writeFile.config(self.diskReadComb.currentText(), self.table.selectedItems())
-        self.startWriteFile.emit()
+        items = self.table.selectedItems()
+        if items:
+            self.progress.setMinimum(int(items[1].text(), 16))
+            self.progress.setMaximum(int(items[2].text(), 16)-1)
+            self.writeFile.config(self.diskReadComb.currentText(), items)
+            self.startWriteFile.emit()
+        else:
+            QMessageBox.warning(self, '警告', '请选择需要写入的文件')
 
     @pyqtSlot()
     def fileHint(self):
