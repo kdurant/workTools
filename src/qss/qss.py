@@ -10,9 +10,6 @@ min-width:2em;
 color:white;
 padding: 5px;
 }
-/*QPushButton:pressed {*/
-/*background-color: #1E90FF;*/
-/*}*/
 QPushButton:pressed 
 {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,

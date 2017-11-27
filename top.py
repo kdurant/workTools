@@ -5,6 +5,7 @@ from PyQt5.QtGui import *
 
 from src.erase.eraseDiskWidget import *
 from src.read.readDiskWidget import *
+from src.qss.qss import *
 
 class Top(QMainWindow):
     def __init__(self):
@@ -57,9 +58,5 @@ if __name__ == "__main__":
     ui = Top()
     ui.show()
 
-    try:
-        import qss.qss
-        ui.setStyleSheet(qss.qss.style)
-    except:
-        pass
+    ui.setStyleSheet(style)
     sys.exit(app.exec_())
