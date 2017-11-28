@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from binascii import b2a_hex, a2b_hex
 from ..misc.misc import *
+import datetime
 
 FILE_UNIT = 0x5000
 
@@ -26,11 +27,13 @@ class WriteData(QObject):
 
         file = open(fileName + '.bin', 'wb')
         disk = open(self.diskName, 'rb')
-
+        n = datetime.datetime.now()
         for addr in range(fileStartUnit, fileEndUnit):
             self.currentAddr = addr
             data = readSector(disk, addr*32, data_len=32*512, mode='rb')
             file.write(data)
+        m = datetime.datetime.now()
+        self.writeFileTime = m-n
         file.close()
         disk.close()
         self.fileWriteDone.emit()
@@ -68,8 +71,8 @@ class ReadDiskWidget(QWidget):
         mainLayout = QHBoxLayout()
         mainLayout.addWidget(leftFrame)
         mainLayout.addWidget(rightFrame)
-        mainLayout.setStretchFactor(leftFrame, 1)
-        mainLayout.setStretchFactor(rightFrame, 3)
+        mainLayout.setStretchFactor(leftFrame, 2)
+        mainLayout.setStretchFactor(rightFrame, 5)
 
 
         self.setLayout(mainLayout)
@@ -84,6 +87,14 @@ class ReadDiskWidget(QWidget):
         self.progress.setMaximum(FILE_UNIT-1)
         self.progress.setMinimum(0)
 
+        timeLabel = QLabel('时间：')
+        self.timeLine = QLineEdit()
+        self.timeLine.setReadOnly(True)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(timeLabel)
+        hbox.addWidget(self.timeLine)
+
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.diskReadComb)
         mainLayout.addWidget(self.anaylzeBtn)
@@ -91,6 +102,7 @@ class ReadDiskWidget(QWidget):
         mainLayout.addWidget(self.saveBtn)
         mainLayout.addWidget(self.label)
         mainLayout.addWidget(self.progress)
+        mainLayout.addLayout(hbox)
 
         frame = QFrame()
         frame.setLayout(mainLayout)
@@ -171,6 +183,7 @@ class ReadDiskWidget(QWidget):
 
     @pyqtSlot()
     def fileHint(self):
+        self.timeLine.setText(str(self.writeFile.writeFileTime))
         QMessageBox.information(self, '信息', '文件写入成功')
 
     @pyqtSlot()
