@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 #-*- coding:utf-8 -*-
-from PyQt5.QtChart import QChart, QLineSeries, QChartView, QValueAxis
+from PyQt5.QtChart import QChart, QLineSeries, QChartView, QValueAxis, QScatterSeries
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -37,10 +37,14 @@ class Chart(QWidget):
         self.chart.addSeries(self.chart3)
         self.chart.addSeries(self.chart4)
         self.chart.setAnimationOptions(QChart.AllAnimations)
-        self.chart.setTitle("basic class")
+        self.chart.setTitle("laser data")
 
         self.axis_x = QValueAxis()
         self.axis_y = QValueAxis()
+        self.axis_x.setTickCount(10)
+        self.axis_y.setTickCount(10)
+        self.axis_x.setLabelFormat('%d')
+        self.axis_y.setLabelFormat('%d')
         self.chart.setAxisX(self.axis_x, self.chart1)
         self.chart.setAxisY(self.axis_y, self.chart1)
         self.chart.setAxisX(self.axis_x, self.chart2)
