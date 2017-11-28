@@ -20,15 +20,22 @@ class Chart(QWidget):
     def chartUI(self):
         self.chart1 = QLineSeries()
         self.chart1.setName('chart1')
-
-        pen = QPen()
-        # pen.setWidthF(.2)
-        pen.setColor(Qt.red)
-        self.chart1.setPen(pen)
+        self.chart1.setPen(QPen(Qt.red))
+        self.chart2 = QLineSeries()
+        self.chart2.setName('chart2')
+        self.chart2.setPen(QPen(Qt.yellow))
+        self.chart3 = QLineSeries()
+        self.chart3.setName('chart3')
+        self.chart3.setPen(QPen(Qt.green))
+        self.chart4 = QLineSeries()
+        self.chart4.setName('chart3')
+        self.chart4.setPen(QPen(Qt.blue))
 
         self.chart = QChart()
-        # self.chart.legend().hide()
         self.chart.addSeries(self.chart1)
+        self.chart.addSeries(self.chart2)
+        self.chart.addSeries(self.chart3)
+        self.chart.addSeries(self.chart4)
         self.chart.setAnimationOptions(QChart.AllAnimations)
         self.chart.setTitle("basic class")
 
@@ -36,6 +43,12 @@ class Chart(QWidget):
         self.axis_y = QValueAxis()
         self.chart.setAxisX(self.axis_x, self.chart1)
         self.chart.setAxisY(self.axis_y, self.chart1)
+        self.chart.setAxisX(self.axis_x, self.chart2)
+        self.chart.setAxisY(self.axis_y, self.chart2)
+        self.chart.setAxisX(self.axis_x, self.chart3)
+        self.chart.setAxisY(self.axis_y, self.chart3)
+        self.chart.setAxisX(self.axis_x, self.chart4)
+        self.chart.setAxisY(self.axis_y, self.chart4)
 
         self.chartView = QChartView()
         self.chartView.setChart(self.chart)
@@ -46,10 +59,18 @@ class Chart(QWidget):
 
     def controlUI(self):
         self.ch0Enable = QCheckBox('Ch0 Enable')
+        self.ch1Enable = QCheckBox('Ch1 Enable')
+        self.ch2Enable = QCheckBox('Ch2 Enable')
+        self.ch3Enable = QCheckBox('Ch3 Enable')
         self.ch0Enable.setChecked(True)
+        self.ch1Enable.setChecked(True)
+        self.ch2Enable.setChecked(True)
+        self.ch3Enable.setChecked(True)
         hbox1 = QHBoxLayout()
         hbox1.addWidget(self.ch0Enable)
-        hbox1.addStretch(1)
+        hbox1.addWidget(self.ch1Enable)
+        hbox1.addWidget(self.ch2Enable)
+        hbox1.addWidget(self.ch3Enable)
 
         self.xDataMinLabel = QLabel('x min:')
         self.xDataMaxLabel = QLabel('x max:')
@@ -82,29 +103,34 @@ class Chart(QWidget):
         self.setBtn.clicked.connect(self.setAxisRange)
         return frame
 
-    def update(self, xData, yData):
+    def update(self, data):
         '''
-        :param xData: list, store x coordinate data
-        :param yData: list, store y coordinate data
+        :param data:
         :return:
         '''
-
+        # if len(data) == 2:
+        #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+        # elif len(data) == 4:
+        #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+        # elif len(data) == 6:
+        #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+        # elif len(data) == 8:
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
         self.chart1.clear()
-        self.axis_x.setRange(min(xData)- max(xData)//10, max(xData)*11//10)
-        self.axis_y.setRange(min(yData)- max(yData)//10, max(yData)*11//10)
-        print(datetime.datetime.now())
-        for i in range(0, len(xData)):
+        self.chart2.clear()
+        self.chart3.clear()
+        self.chart4.clear()
+        self.axis_x.setRange(min(x0Data) - max(x0Data) // 10, max(x0Data) * 11 // 10)
+        self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
+        for i in range(0, len(x0Data)):
             if self.ch0Enable.isChecked():
-                # self.chart1.append(QPoint(xData[i], yData[i]))
-                self.chart1.append(xData[i], yData[i])
-        print(datetime.datetime.now())
-
-        self.chart1.clear()
-        print(datetime.datetime.now())
-        for i in range(0, len(xData)):
-            if self.ch0Enable.isChecked():
-                self.chart1.append(QPoint(xData[i], yData[i]))
-        print(datetime.datetime.now())
+                self.chart1.append(QPoint(x0Data[i], y0Data[i]))
+            if self.ch1Enable.isChecked():
+                self.chart2.append(QPoint(x1Data[i], y1Data[i]))
+            if self.ch2Enable.isChecked():
+                self.chart3.append(QPoint(x2Data[i], y2Data[i]))
+            if self.ch3Enable.isChecked():
+                self.chart4.append(QPoint(x3Data[i], y3Data[i]))
         self.chartView.update()
 
     @pyqtSlot()
@@ -112,8 +138,12 @@ class Chart(QWidget):
     #     self.axis_x.setRange(xDataMin, xDataMax)
     #     self.axis_y.setRange(yDataMin, yDataMax)
     def setAxisRange(self):
-        self.axis_x.setRange(int(self.xDataMinLine.text()), int(self.xDataMaxLine.text()))
-        self.axis_y.setRange(int(self.yDataMinLine.text()), int(self.yDataMaxLine.text()))
+        if self.xDataMinLine.text() and self.xDataMaxLine.text() and \
+            self.yDataMinLine.text() and self.yDataMaxLine.text():
+            self.axis_x.setRange(int(self.xDataMinLine.text()), int(self.xDataMaxLine.text()))
+            self.axis_y.setRange(int(self.yDataMinLine.text()), int(self.yDataMaxLine.text()))
+        else:
+            QMessageBox.warning(self, '警告', '缺少参数')
 
 
 class TestUi(QWidget):
@@ -132,13 +162,19 @@ class TestUi(QWidget):
         self.setLayout(vbox)
 
     def generateData(self):
+        m = []
         x = []
         y = []
-        for i in range(0, 1000):
-            x.append(i)
+        z = []
+        u = []
+        for i in range(0, 50):
+            m.append(i)
+            x.append(random.randint(0, 100))
             y.append(random.randint(0, 100))
+            z.append(random.randint(0, 100))
+            u.append(random.randint(0, 100))
 
-        self.chart.update(x, y)
+        self.chart.update([m, x, m, y, m, z, m, u])
 
 if __name__ == "__main__":
     import sys

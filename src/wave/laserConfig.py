@@ -21,12 +21,12 @@ class LaserConfigUI(QWidget):
 
 
         # 控制按钮
-        self.startBtn = QPushButton("开始分析")
+        self.startBtn = QPushButton("开始")
         self.startBtn.setIconSize(QSize(48, 48))
-        self.pauseBtn = QPushButton("暂停分析")
+        self.pauseBtn = QPushButton("暂停")
         self.pauseBtn.setEnabled(False)
         self.pauseBtn.setIconSize(QSize(48, 48))
-        self.stopBtn = QPushButton("结束分析")
+        self.stopBtn = QPushButton("结束")
         self.stopBtn.setEnabled(False)
         self.stopBtn.setIconSize(QSize(48, 48))
 

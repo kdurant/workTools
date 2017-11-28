@@ -7,27 +7,34 @@ class SelectFileUI(QWidget):
     def __init__(self, parent=None):
         super(SelectFileUI, self).__init__(parent)
 
+
+        group = self.groupBox()
+
+        mainLayout = QVBoxLayout()
+        mainLayout.addWidget(group)
+        mainLayout.addStretch(1)
+
+        self.setLayout(mainLayout)
+
+    def groupBox(self):
         groupBox = QGroupBox('文件选择')
 
         self.loadFileBtn = QPushButton('选择文件')
-        self.loadFileBtn.setIcon(QIcon('./images/open.svg'))
-        self.loadFileBtn.setIconSize(QSize(48, 24))
 
         self.landRbtn = QRadioButton("&陆地")
         self.oceanRbtn = QRadioButton("&海洋")
         self.oceanRbtn.setChecked(True)
 
-        hlyt = QHBoxLayout()
-        hlyt.addWidget(self.loadFileBtn)
-        hlyt.addWidget(self.landRbtn)
-        hlyt.addWidget(self.oceanRbtn)
-        groupBox.setLayout(hlyt)
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.landRbtn)
+        hbox.addWidget(self.oceanRbtn)
 
-        main_lyt = QHBoxLayout()
-        main_lyt.addWidget(groupBox)
-        main_lyt.addStretch(1)
+        mainLayout = QVBoxLayout()
+        mainLayout.addWidget(self.loadFileBtn)
+        mainLayout.addLayout(hbox)
 
-        self.setLayout(main_lyt)
+        groupBox.setLayout(mainLayout)
+        return groupBox
 
 if __name__ == "__main__":
     import sys
