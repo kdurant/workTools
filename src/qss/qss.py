@@ -119,10 +119,10 @@ height:28;
 }
 
 QRadioButton::indicator:unchecked{
-image: url(images/rbtn_unchecked.png);
+image: url(src/qss/rbtn_unchecked.png);
 }
 QRadioButton::indicator:checked{
-image: url(images/rbtn_checked.png);
+image: url(src/qss/rbtn_checked.png);
 }
 
 QTableView {
