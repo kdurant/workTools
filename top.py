@@ -43,11 +43,19 @@ class Top(QMainWindow):
         self.readDiskAction = QAction(QIcon('images/readDisk.svg'), "readDisk", self, triggered=self.showWidget)
         self.eraseDiskAction = QAction(QIcon('images/eraseDisk.svg'), "eraseDisk", self, triggered=self.showWidget)
         self.showWaveAction = QAction(QIcon('images/showWave.svg'), "showWave", self, triggered=self.showWidget)
+        toolBar = QToolBar('Navigation')
+        toolBar.addAction(self.eraseDiskAction)
+        toolBar.addAction(self.readDiskAction)
+        toolBar.addAction(self.showWaveAction)
+        toolBar.setIconSize(QSize(48, 48))
+        toolBar.setFixedHeight(48)
+        self.addToolBar(toolBar)
+        
 
-        toolbar = self.addToolBar('T')
-        toolbar.addAction(self.eraseDiskAction)
-        toolbar.addAction(self.readDiskAction)
-        toolbar.addAction(self.showWaveAction)
+        # toolbar = self.addToolBar('T')
+        # toolbar.addAction(self.eraseDiskAction)
+        # toolbar.addAction(self.readDiskAction)
+        # toolbar.addAction(self.showWaveAction)
 
 
     def showWidget(self):
