@@ -8,6 +8,7 @@ from binascii import a2b_hex, b2a_hex
 from ..serial.serialUI import *
 from ..serial.extendFunction import *
 
+
 class SerialTop(SerialUI):
     dataReady = pyqtSignal(str, bool)
     def __init__(self):

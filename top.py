@@ -9,6 +9,13 @@ from src.qss.qss import *
 from src.wave.waveTop import *
 from src.serial.serialTop import *
 
+# from src.erase import *
+# from src.read import *
+# from src.qss import *
+# from src.wave import *
+# from src.serial import *
+
+
 class Top(QMainWindow):
     def __init__(self):
         super(Top, self).__init__()
