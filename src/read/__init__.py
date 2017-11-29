@@ -1,3 +1,3 @@
 # __all__ = ['ReadDiskWidget']
 
-from src.read.readDiskWidget import ReadDiskWidget
+from .readDiskWidget import ReadDiskWidget

@@ -5,8 +5,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtSerialPort import *
 
-from ..serial.extendFunction import *
-from ..serial.serialWidget import *
+from .extendFunction import *
+from .serialWidget import *
 
 class SerialUI(QMainWindow):
     def __init__(self):

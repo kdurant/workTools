@@ -2,4 +2,4 @@
 
 # __all__ = ['diskInfo', 'readSector', 'eraserSector']
 
-from src.misc.misc import diskInfo, readSector, eraserSector
+from .misc import diskInfo, readSector, eraserSector

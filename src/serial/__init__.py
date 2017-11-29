@@ -1,6 +1,6 @@
 # import eraser
 
-from src.serial.extendFunction import *
-from src.serial.serialTop import *
-from src.serial.serialUI import *
-from src.serial.serialWidget import *
+from .extendFunction import *
+from .serialTop import *
+from .serialUI import *
+from .serialWidget import *

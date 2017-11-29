@@ -1,3 +1,3 @@
 # import eraser
 
-from src.erase.eraseDiskWidget import *
+from .eraseDiskWidget import *
