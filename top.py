@@ -52,7 +52,7 @@ class Top(QMainWindow):
         toolBar.addAction(self.eraseDiskAction)
         toolBar.addAction(self.readDiskAction)
         toolBar.addAction(self.showWaveAction)
-        toolBar.addAction(self.serialAction)
+        # toolBar.addAction(self.serialAction)
         toolBar.setIconSize(QSize(48, 48))
         toolBar.setFixedHeight(48)
         self.addToolBar(toolBar)

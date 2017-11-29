@@ -125,7 +125,8 @@ class Chart(QWidget):
         self.chart3.clear()
         self.chart4.clear()
         self.axis_x.setRange(min(x0Data) - max(x0Data) // 10, max(x0Data) * 11 // 10)
-        self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
+        # self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
+        self.axis_y.setRange(0, 1000)
         for i in range(0, len(x0Data)):
             if self.ch0Enable.isChecked():
                 self.chart1.append(QPoint(x0Data[i], y0Data[i]))
