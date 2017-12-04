@@ -27,6 +27,7 @@ class Top(QMainWindow):
             'extBoard' : 4,
             'captureBoard' : 5
         }
+        self.resize(QSize(1000, 800))
 
     def initUI(self):
         self.readDiskStack = ReadDiskWidget()

@@ -10,54 +10,50 @@ from src import *
 import queue
 
 class DataAnalyze(QObject):
-    data_analyze_done = pyqtSignal()
+    data_analyze_done = pyqtSignal(list)
     def __init__(self, queue, frame):
         super(DataAnalyze, self).__init__()
         self.q = queue
         self.frame = frame
 
+    def start(self, startFlag = False):
+        self.startFlag = startFlag
+
+    def stop(self, stopFlag = False):
+        self.startFlag = stopFlag
+
     def work(self):
-        while True:
+        while self.startFlag:
             if not self.q.empty():
                 data = self.q.get()
                 self.frame.config(data)
                 if self.frame.analyzeFrame() == True:
-                    self.data_analyze_done.emit()
+                    self.data_analyze_done.emit(self.q.put())
 
 
 class CaptureBoard(QWidget):
     # data_analyze_start = pyqtSignal()
-    send_udp_flag = pyqtSignal()
+    packetFrameDone = pyqtSignal([str])
     def __init__(self):
         super(CaptureBoard, self).__init__()
         self.resize(QSize(1200, 600))
 
-        self.cmd_cnt = 0
         self.frame = ''
 
-        self.ad_sample_len = '160'
-        self.udp_tx_pck = EncodeProtocol()
-        self.udp_rx_pck = DecodeProtocol()
-        self.udp_rx_queue = queue.Queue(-1)
+        self.udpTxPck = EncodeProtocol()
+        self.udpRxPck = DecodeProtocol()
+        self.waveQueue = queue.Queue(-1)
 
         self.initUI()
         self.signalSlot()
-        # self.threadConfig()
+        self.threadConfig()
 
     def threadConfig(self):
-        self.analyze = DataAnalyze(self.udp_rx_queue, self.udp_rx_pck)
-
+        self.analyze = DataAnalyze(self.waveQueue, self.udpRxPck)
         self.analyzeThread = QThread()
-        # self.graphThread = QThread()
-
         self.analyze.moveToThread(self.analyzeThread)
-        # self.graph.moveToThread(self.graphThread)
-
         self.analyzeThread.started.connect(self.analyze.work)
-        # self.graphThread.started.connect(self.graph.work)
-
-        # self.analyze.data_analyze_done.connect(self.graph.work)
-        self.analyze.data_analyze_done.connect(self.updateChart)
+        self.analyze.data_analyze_done[list].connect(self.updateChart)
 
     def initUI(self):
         self.udpCore = UdpCore()
@@ -85,7 +81,6 @@ class CaptureBoard(QWidget):
         mainLayout.setStretchFactor(rightLayout, 2)
 
         self.setLayout(mainLayout)
-
 
     def previewDataUI(self):
         frame = QFrame()
@@ -147,58 +142,40 @@ class CaptureBoard(QWidget):
         return frame
 
     def signalSlot(self):
-        # self.send_udp_flag.connect(self.sendUdpFrame)
+        self.startBtn.clicked.connect(self.configUdpFrame)
+        self.stopBtn.clicked.connect(self.configUdpFrame)
+        self.packetFrameDone.connect(self.udpCore.sendFrame)
+        self.udpCore.recvDataReady[bytes, str, int].connect(self.processPendingDatagrams)
         pass
 
     @pyqtSlot()
     def configUdpFrame(self):
-        self.cmd_cnt = int(self.cmd_num_edit.text())
-        head = self.head_edit.text()
-        cmd_num = self.cmd_num_edit.text()
-        command = self.command_cb.currentText()
-        data_len = self.data_len_edit.text()
-        if self.command_cb.currentText() == 'AD采样长度':
-            data = int(self.data_edit.text(), 10)
-            data = data//8*8
-            data = str(hex(data).replace('0x', ''))
-            self.ad_sample_len = self.data_edit.text()
-        else:
-            data = self.data_edit.text()
+        sender = self.sender()
 
-        self.udp_tx_pck.config(head, cmd_num, command, data_len, data)
-        self.frame = self.udp_tx_pck.getFrame()
+        head = 'AA555AA5 AA555AA5'
+        cmd_num = 'aaddccaa'
+        command = '00000005'
+        data_len = '4'
 
-        self.cmd_cnt += 1
-        self.cmd_num_edit.setText(str(self.cmd_cnt))
+        if sender.text() == '开始采集':
+            data = '0000 0001'
+        elif sender.text() == '停止采集':
+            data = '0000 0000'
 
-        self.frame = a2b_hex(self.frame)
-        self.send_udp_flag.emit()
+        self.udpTxPck.config(head=head, cmd_num=cmd_num, command=command, data_len=data_len, data=data)
+        frame = self.udpTxPck.getFrame()
+        self.packetFrameDone.emit(frame)
 
-    @pyqtSlot()
-    def processPendingDatagrams(self):
-        while self.udpSocket.hasPendingDatagrams():
-            # print(self.udpRecSocket.pendingDatagramSize())
-            datagram, host, port = self.udpSocket.readDatagram(self.udpSocket.pendingDatagramSize())
-            datagram = b2a_hex(datagram)
-            datagram = datagram.decode(encoding = 'utf-8')
-            # print(datagram)
-            if self.bind_btn.text() == '已经连接':
-                self.udp_rx_queue.put(datagram)
-                self.rec_data_text.append(datagram)
+    @pyqtSlot(bytes, str, int)
+    def processPendingDatagrams(self, datagram, host, port):
+            data = b2a_hex(datagram)
+            data = data.decode(encoding = 'utf-8')
+            if data[24:32] != '80000006':
+                self.waveQueue.put(data)
 
-
-    def updateChart(self):
-        self.ch0_data.clear()
-        self.ch1_data.clear()
-        self.ch2_data.clear()
-        self.ch3_data.clear()
-        for i in self.udp_rx_pck.ch0_data_x:
-            self.ch0_data.append(QPointF(i, self.udp_rx_pck.ch0_ydata[i]))
-            self.ch1_data.append(QPointF(i, self.udp_rx_pck.ch1_ydata[i]))
-            self.ch2_data.append(QPointF(i, self.udp_rx_pck.ch2_ydata[i]))
-            self.ch3_data.append(QPointF(i, self.udp_rx_pck.ch3_ydata[i]))
-        self.chartView.update()
-
+    @pyqtSlot(list)
+    def updateChart(self, data):
+        self.chart.update(data)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
