@@ -2,20 +2,9 @@
 
 from .misc import str2list
 class EncodeProtocol():
-    def __init__(self):
+    def __init__(self, table = {}):
         self.pck_num = 8*'0'
-
-        self.table = {
-            '系统复位'      : '50000001',
-            '读取设备参数'  : '50000002',
-            '透传激光参数'  : '50000003',
-            '激光重频'      : '50000004',
-            '激光器开关'    : '50000005',
-            'AD起始位置'    : '50000006',
-            'AD采样长度'    : '50000007',
-            'AD采集状态'    : '50000008'
-        }
-
+        self.table = table
     def config(self, head='AA555AA5AA555AA5', cmd_num='00000000', command='00000000', pck_num='11223344', data_len=4, data='0000'):
         self.head = ''.join(head.split())
         self.cmd_num = ''.join(cmd_num.split()).zfill(8)
@@ -59,7 +48,7 @@ class EncodeProtocol():
         return frame_data
 
 class DecodeProtocol():
-    def __init__(self):
+    def __init__(self, table = {}):
         self.pck_num = 0
         self.cnt = 0
         self.ch_all_data = ''
@@ -71,10 +60,8 @@ class DecodeProtocol():
         self.ch2_ydata = []
         self.ch3_xdata = []
         self.ch3_ydata = []
-        self.table = {
-            'AD采样长度'    : 'a0000007',
-            'AD采集状态'    : 'a0000008'
-        }
+        self.table = table
+
     def config(self, frame):
         self.frame = frame
 
