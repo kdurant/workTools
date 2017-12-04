@@ -41,6 +41,7 @@ class UdpCore(QWidget):
         self.targetPort = QLineEdit('4444')
 
         self.bindRbtn = QRadioButton()
+        self.bindRbtn.setObjectName('singleRadioBtn')
 
         form = QFormLayout()
         form.addRow('本机IP地址：', self.masterIP)
@@ -105,6 +106,7 @@ class UdpCore(QWidget):
                 self.udpSocket.readyRead.connect(self.processUDPDatagrams)
             else:
                 QMessageBox.warning(self, "警告", 'UDP端口被占用')
+                self.bindRbtn.setChecked(False)
         else:
             self.udpSocket.disconnectFromHost()
 

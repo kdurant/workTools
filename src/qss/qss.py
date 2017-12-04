@@ -20,13 +20,19 @@ QPushButton:!enabled{
     border-style: inset;
 }
 
+
 QRadioButton:enabled:checked{
     color: rgb(128, 128, 255);
 }
 
 QRadioButton::indicator {
-    width:28;
-    height:28;
+    width:48;
+    height:24;
+}
+
+QRadioButton#singleRadioBtn::indicator {
+    width:100;
+    height:32;
 }
 
 QRadioButton::indicator:unchecked{
@@ -41,8 +47,8 @@ QCheckBox:enabled:checked{
 }
 
 QCheckBox::indicator {
-    width:18;
-    height:18;
+    width:32;
+    height:32;
 }
 
 QCheckBox::indicator:unchecked{

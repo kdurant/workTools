@@ -62,10 +62,10 @@ class Chart(QWidget):
         return self.chartView
 
     def controlUI(self):
-        self.ch0Enable = QCheckBox('Ch0 Enable')
-        self.ch1Enable = QCheckBox('Ch1 Enable')
-        self.ch2Enable = QCheckBox('Ch2 Enable')
-        self.ch3Enable = QCheckBox('Ch3 Enable')
+        self.ch0Enable = QCheckBox('Ch0')
+        self.ch1Enable = QCheckBox('Ch1')
+        self.ch2Enable = QCheckBox('Ch2')
+        self.ch3Enable = QCheckBox('Ch3')
         self.ch0Enable.setChecked(True)
         self.ch1Enable.setChecked(True)
         self.ch2Enable.setChecked(True)

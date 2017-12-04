@@ -1,1 +1,1 @@
-from .capture import CaptureBoard
+from .captureBoard import CaptureBoard
