@@ -44,3 +44,11 @@ def eraserSector(drive, sector, data, data_len=512):
     '''
     drive.seek(sector * 512)
     drive.write(data*data_len)
+
+
+def str2list(s, width):
+    '''将字符串按照指定宽度截取成列表，且列表数据转换为16进制'''
+    if len(s) % width == 0:
+        return [int(s[x:x + width], 16) for x in range(0, len(s), width)]
+    else:
+        print('hello world')

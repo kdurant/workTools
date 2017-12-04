@@ -6,5 +6,4 @@ from .gpsTest import GpsTest
 from .laserTest import LaserTest
 from .motorTest import MotorTest
 from .netConfigWidget import NetConfigWidget
-from .protocol import EncodeProtocol
 from .uartTest import UartTest

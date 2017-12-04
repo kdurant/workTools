@@ -2,10 +2,9 @@
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
 
-from .protocol import *
-from binascii import a2b_hex, b2a_hex
+from src.misc.protocol import *
+
 
 class adcWidget(QWidget):
     packetFrameDone = pyqtSignal([str])

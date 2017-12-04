@@ -1,12 +1,6 @@
 #-*- coding:utf-8 -*-
 
-
-def str2list(s, width):
-    '''将字符串按照指定宽度截取成列表，且列表数据转换为16进制'''
-    if len(s) % width == 0:
-        return [int(s[x:x + width], 16) for x in range(0, len(s), width)]
-    else:
-        print('hello world')
+from src import str2list
 
 class EncodeProtocol():
     def __init__(self):

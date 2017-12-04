@@ -1,12 +1,13 @@
 
 #-*- coding:utf-8 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtSerialPort import *
-from binascii import a2b_hex, b2a_hex
+from binascii import a2b_hex
 
-from .protocol import *
+from PyQt5.QtCore import *
+from PyQt5.QtSerialPort import *
+from PyQt5.QtWidgets import *
+
+from src.misc.protocol import *
+
 
 class GpsTest(QWidget):
     packetFrameDone = pyqtSignal([str])
