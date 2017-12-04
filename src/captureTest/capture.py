@@ -25,11 +25,11 @@ class DataAnalyze(QObject):
                     self.data_analyze_done.emit()
 
 
-class window(QMainWindow):
+class CaptureBoard(QMainWindow):
     # data_analyze_start = pyqtSignal()
     send_udp_flag = pyqtSignal()
     def __init__(self):
-        super(window, self).__init__()
+        super(CaptureBoard, self).__init__()
         self.setWindowTitle('协议调试工具')
         self.setWindowIcon(QIcon('images/network.svg'))
         self.resize(QSize(1200, 600))
@@ -291,48 +291,6 @@ class window(QMainWindow):
         frame.setLayout(vbox)
 
         return frame
-
-    def adChartUI(self):
-        self.ch0_data = QLineSeries()
-        self.ch1_data = QLineSeries()
-        self.ch2_data = QLineSeries()
-        self.ch3_data = QLineSeries()
-
-        self.ch0_data.setName('ch0')
-        self.ch1_data.setName('ch1')
-        self.ch2_data.setName('ch2')
-        self.ch3_data.setName('ch3')
-
-        self.chart = QChart()
-        self.chart.setTheme(QChart.ChartThemeQt)
-        self.chart.setAnimationOptions(QChart.AllAnimations)
-        self.chart.setTitle("AD data preview")
-
-        self.chart.addSeries(self.ch0_data)
-        self.chart.addSeries(self.ch1_data)
-        self.chart.addSeries(self.ch2_data)
-        self.chart.addSeries(self.ch3_data)
-
-        self.axis_x = QValueAxis()
-        self.axis_y = QValueAxis()
-        self.chart.setAxisX(self.axis_x, self.ch0_data)
-        self.chart.setAxisY(self.axis_y, self.ch0_data)
-        self.chart.setAxisX(self.axis_x, self.ch1_data)
-        self.chart.setAxisY(self.axis_y, self.ch1_data)
-        self.chart.setAxisX(self.axis_x, self.ch2_data)
-        self.chart.setAxisY(self.axis_y, self.ch2_data)
-        self.chart.setAxisX(self.axis_x, self.ch3_data)
-        self.chart.setAxisY(self.axis_y, self.ch3_data)
-
-        self.axis_x.setRange(0, 150)
-        self.axis_y.setRange(0, 200)
-
-        chartView = QChartView()
-        chartView.setChart(self.chart)
-        chartView.setRenderHint(QPainter.Antialiasing)
-
-        return chartView
-
     def signalSlot(self):
         self.bind_btn.clicked.connect(self.udpLinkStatus)
         self.send_btn.clicked.connect(self.configUdpFrame)
@@ -434,6 +392,6 @@ class window(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ui = window()
+    ui = CaptureBoard()
     ui.show()
     sys.exit(app.exec_())

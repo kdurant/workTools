@@ -24,7 +24,8 @@ class Top(QMainWindow):
             'readDisk' : 1,
             'showWave' : 2,
             'serial' : 3,
-            'extBoard' : 4
+            'extBoard' : 4,
+            'captureBoard' : 5
         }
 
     def initUI(self):
@@ -33,6 +34,7 @@ class Top(QMainWindow):
         self.waveTopStack = WaveTop()
         self.serialStack = SerialTop()
         self.extBoardStack = ExtBoard()
+        # self.captureBoardStack = CaptureBoard()
         self.stack = QStackedWidget()
         self.stack.addWidget(self.eraseDiskStack)
         self.stack.addWidget(self.readDiskStack)
@@ -55,12 +57,14 @@ class Top(QMainWindow):
         self.showWaveAction = QAction(QIcon('images/showWave.svg'), "showWave", self, triggered=self.showWidget)
         self.serialAction = QAction(QIcon('images/serialIcon.svg'), "serial", self, triggered=self.showWidget)
         self.extBoard = QAction(QIcon('images/extBoard.svg'), "extBoard", self, triggered=self.showWidget)
+        self.captureBoard = QAction(QIcon('images/captureBoard.svg'), "captureBoard", self, triggered=self.showWidget)
         toolBar = QToolBar('Navigation')
         toolBar.addAction(self.eraseDiskAction)
         toolBar.addAction(self.readDiskAction)
         toolBar.addAction(self.showWaveAction)
         # toolBar.addAction(self.serialAction)
         toolBar.addAction(self.extBoard)
+        toolBar.addAction(self.captureBoard)
         toolBar.setIconSize(QSize(48, 48))
         toolBar.setFixedHeight(48)
         self.addToolBar(toolBar)
@@ -84,6 +88,8 @@ class Top(QMainWindow):
             self.stack.setCurrentIndex(self.config['serial'])
         elif sender.text() == 'extBoard':
             self.stack.setCurrentIndex(self.config['extBoard'])
+        elif sender.text() == 'captureBoard':
+            self.stack.setCurrentIndex(self.config['captureBoard'])
         else:
             pass
 
