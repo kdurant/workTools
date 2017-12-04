@@ -1,17 +1,13 @@
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtNetwork import QUdpSocket, QHostAddress
-from PyQt5.QtChart import QChart, QLineSeries, QChartView, QValueAxis
-from binascii import a2b_hex, b2a_hex
+from binascii import b2a_hex
 
-from .dacWidget import *
+from src.common.udpCore import UdpCore
 from .adcWidget import *
-from .motorTest import *
-from .laserTest import *
-from .gpsTest import *
 from .commandTest import *
-from .udpCore import UdpCore
+from .dacWidget import *
+from .gpsTest import *
+from .laserTest import *
+from .motorTest import *
+
 
 class ExtBoard(QMainWindow):
     dataToDAC = pyqtSignal(str)

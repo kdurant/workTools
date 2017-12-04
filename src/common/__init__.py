@@ -5,3 +5,5 @@
 from .misc import diskInfo, readSector, eraserSector, str2list
 
 from .protocol import EncodeProtocol, DecodeProtocol
+
+from .udpCore import UdpCore

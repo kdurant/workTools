@@ -5,5 +5,4 @@ from .extBoardTestTool import ExtBoard
 from .gpsTest import GpsTest
 from .laserTest import LaserTest
 from .motorTest import MotorTest
-from .udpCore import UdpCore
 from .uartTest import UartTest
