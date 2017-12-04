@@ -1,7 +1,6 @@
 #-*- coding:utf-8 -*-
 
-from src import str2list
-
+from .misc import str2list
 class EncodeProtocol():
     def __init__(self):
         self.pck_num = 8*'0'
