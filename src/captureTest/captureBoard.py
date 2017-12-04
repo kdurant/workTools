@@ -60,7 +60,7 @@ class CaptureBoard(QWidget):
         self.startBtn = QPushButton('开始采集')
         self.stopBtn = QPushButton('停止采集')
         self.dataCheck = self.previewDataUI()
-        self.chart = Chart()
+        self.chart = Chart('apd', 'pmt1', 'pmt2', 'pmt3')
         hbox = QVBoxLayout()
         hbox.addWidget(self.udpCore)
         hbox.addWidget(self.startBtn)

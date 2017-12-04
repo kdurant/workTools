@@ -6,8 +6,12 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 class Chart(QWidget):
-    def __init__(self):
+    def __init__(self, ch0Name='ch0', ch1Name='ch1', ch2Name='ch2', ch3Name='ch3'):
         super(Chart, self).__init__()
+        self.ch0Name = ch0Name
+        self.ch1Name = ch1Name
+        self.ch2Name = ch2Name
+        self.ch3Name = ch3Name
         self.initUI()
 
     def initUI(self):
@@ -19,16 +23,16 @@ class Chart(QWidget):
 
     def chartUI(self):
         self.chart1 = QLineSeries()
-        self.chart1.setName('chart1')
+        self.chart1.setName(self.ch0Name)
         self.chart1.setPen(QPen(Qt.red))
         self.chart2 = QLineSeries()
-        self.chart2.setName('chart2')
+        self.chart2.setName(self.ch1Name)
         self.chart2.setPen(QPen(Qt.yellow))
         self.chart3 = QLineSeries()
-        self.chart3.setName('chart3')
+        self.chart3.setName(self.ch2Name)
         self.chart3.setPen(QPen(Qt.green))
         self.chart4 = QLineSeries()
-        self.chart4.setName('chart3')
+        self.chart4.setName(self.ch3Name)
         self.chart4.setPen(QPen(Qt.blue))
 
         self.chart = QChart()
@@ -62,10 +66,10 @@ class Chart(QWidget):
         return self.chartView
 
     def controlUI(self):
-        self.ch0Enable = QCheckBox('Ch0')
-        self.ch1Enable = QCheckBox('Ch1')
-        self.ch2Enable = QCheckBox('Ch2')
-        self.ch3Enable = QCheckBox('Ch3')
+        self.ch0Enable = QCheckBox(self.ch0Name)
+        self.ch1Enable = QCheckBox(self.ch1Name)
+        self.ch2Enable = QCheckBox(self.ch2Name)
+        self.ch3Enable = QCheckBox(self.ch3Name)
         self.ch0Enable.setChecked(True)
         self.ch1Enable.setChecked(True)
         self.ch2Enable.setChecked(True)

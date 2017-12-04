@@ -72,7 +72,7 @@ class WaveTop(QWidget):
     def initUI(self):
         self.selectFileUI = SelectFileUI()
         self.laserConfigUI = LaserConfigUI()
-        self.laserChart = Chart()
+        self.laserChart = Chart('apd', 'pmt1', 'pmt2', 'pmt3')
 
         leftLayout = QVBoxLayout()
         leftLayout.addWidget(self.selectFileUI)
