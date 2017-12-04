@@ -23,7 +23,8 @@ class Top(QMainWindow):
             'eraseDisk' : 0,
             'readDisk' : 1,
             'showWave' : 2,
-            'serial' : 3
+            'serial' : 3,
+            'extBoard' : 4
         }
 
     def initUI(self):
@@ -31,11 +32,13 @@ class Top(QMainWindow):
         self.eraseDiskStack = EraseDiskWidget()
         self.waveTopStack = WaveTop()
         self.serialStack = SerialTop()
+        self.extBoardStack = ExtBoard()
         self.stack = QStackedWidget()
         self.stack.addWidget(self.eraseDiskStack)
         self.stack.addWidget(self.readDiskStack)
         self.stack.addWidget(self.waveTopStack)
         self.stack.addWidget(self.serialStack)
+        self.stack.addWidget(self.extBoardStack)
 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.stack)
@@ -51,11 +54,13 @@ class Top(QMainWindow):
         self.eraseDiskAction = QAction(QIcon('images/eraseDisk.svg'), "eraseDisk", self, triggered=self.showWidget)
         self.showWaveAction = QAction(QIcon('images/showWave.svg'), "showWave", self, triggered=self.showWidget)
         self.serialAction = QAction(QIcon('images/serialIcon.svg'), "serial", self, triggered=self.showWidget)
+        self.extBoard = QAction(QIcon('images/extBoard.svg'), "extBoard", self, triggered=self.showWidget)
         toolBar = QToolBar('Navigation')
         toolBar.addAction(self.eraseDiskAction)
         toolBar.addAction(self.readDiskAction)
         toolBar.addAction(self.showWaveAction)
         # toolBar.addAction(self.serialAction)
+        toolBar.addAction(self.extBoard)
         toolBar.setIconSize(QSize(48, 48))
         toolBar.setFixedHeight(48)
         self.addToolBar(toolBar)
@@ -77,6 +82,8 @@ class Top(QMainWindow):
             self.stack.setCurrentIndex(self.config['showWave'])
         elif sender.text() == 'serial':
             self.stack.setCurrentIndex(self.config['serial'])
+        elif sender.text() == 'extBoard':
+            self.stack.setCurrentIndex(self.config['extBoard'])
         else:
             pass
 
