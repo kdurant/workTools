@@ -1,13 +1,10 @@
 #-*- coding:utf-8 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
 import binascii
 
+from src.common.chart import Chart
 from ..wave.laserConfig import *
-from ..wave.selectFileUI import *
-from ..wave.chart import Chart
 from ..wave.oceanFormat import OceanFormat
+from ..wave.selectFileUI import *
 
 ocean = OceanFormat()
 

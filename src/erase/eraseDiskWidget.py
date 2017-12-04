@@ -2,7 +2,7 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from ..misc.misc import *
+from ..common.misc import *
 
 FILE_UNIT = 0x5000
 

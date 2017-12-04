@@ -3,7 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from binascii import b2a_hex, a2b_hex
-from ..misc.misc import *
+from ..common.misc import *
 import datetime
 
 FILE_UNIT = 0x5000

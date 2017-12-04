@@ -1,5 +1,5 @@
 from .erase import *
-from .misc import *
+from .common import *
 from .qss import *
 from .read import *
 from .serial import *
