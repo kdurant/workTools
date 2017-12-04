@@ -150,6 +150,17 @@ class Chart(QWidget):
         else:
             QMessageBox.warning(self, '警告', '缺少参数')
 
+    def mouseDoubleClickEvent(self, event):
+        print('mouse double clicked')
+        # self.chartView.resetTransform()
+        self.chart1.zoomReset()
+
+    def mousePressEvent(self, event):
+        print('mouse press')
+
+    def mouseMoveEvent(self, event):
+        print('mouse move')
+
 
 class TestUi(QWidget):
     def __init__(self):
