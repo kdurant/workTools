@@ -66,6 +66,8 @@ class Chart(QWidget):
         return self.chartView
 
     def controlUI(self):
+        self.autoRefreshCb = QCheckBox('自动刷新')
+        self.autoRefreshCb.setChecked(True)
         self.ch0Enable = QCheckBox(self.ch0Name)
         self.ch1Enable = QCheckBox(self.ch1Name)
         self.ch2Enable = QCheckBox(self.ch2Name)
@@ -75,6 +77,7 @@ class Chart(QWidget):
         self.ch2Enable.setChecked(True)
         self.ch3Enable.setChecked(True)
         hbox1 = QHBoxLayout()
+        hbox1.addWidget(self.autoRefreshCb)
         hbox1.addWidget(self.ch0Enable)
         hbox1.addWidget(self.ch1Enable)
         hbox1.addWidget(self.ch2Enable)
@@ -124,13 +127,17 @@ class Chart(QWidget):
         #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
         # elif len(data) == 8:
         x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+        self.fillAxisRange(x0Data, y0Data)
         self.chart1.clear()
         self.chart2.clear()
         self.chart3.clear()
         self.chart4.clear()
-        self.axis_x.setRange(min(x0Data) - max(x0Data) // 10, max(x0Data) * 11 // 10)
-        # self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
-        self.axis_y.setRange(0, 1000)
+
+        if self.autoRefreshCb.isChecked():
+            self.axis_x.setRange(min(x0Data) - max(x0Data) // 10, max(x0Data) * 11 // 10)
+            # self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
+            self.axis_y.setRange(0, 1000)
+
         for i in range(0, len(x0Data)):
             if self.ch0Enable.isChecked():
                 self.chart1.append(QPoint(x0Data[i], y0Data[i]))
@@ -141,6 +148,12 @@ class Chart(QWidget):
             if self.ch3Enable.isChecked():
                 self.chart4.append(QPoint(x3Data[i], y3Data[i]))
         self.chartView.update()
+
+    def fillAxisRange(self, xData, yData):
+        self.xDataMinLine.setText(str(min(xData)*9//10))
+        self.xDataMaxLine.setText(str(max(xData)*11//10))
+        self.yDataMinLine.setText(str(min(yData)*9//10))
+        self.yDataMaxLine.setText(str(min(yData)*11//10))
 
     @pyqtSlot()
     # def setAxisRange(self, xDataMin, xDataMax, yDataMin, yDataMax):
