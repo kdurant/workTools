@@ -203,6 +203,22 @@ class CaptureBoard(QWidget):
     @pyqtSlot(list)
     def updateChart(self, data):
         self.chart.update(data)
+        self.updateChInfo(data)
+
+    def updateChInfo(self, data):
+        _, y0Data, _, y1Data, _, y2Data, _, y3Data = data
+        self.ch0_min_value.setText(str(min(y0Data)))
+        self.ch1_min_value.setText(str(min(y1Data)))
+        self.ch2_min_value.setText(str(min(y2Data)))
+        self.ch3_min_value.setText(str(min(y3Data)))
+        self.ch0_max_value.setText(str(max(y0Data)))
+        self.ch1_max_value.setText(str(max(y1Data)))
+        self.ch2_max_value.setText(str(max(y2Data)))
+        self.ch3_max_value.setText(str(max(y3Data)))
+        self.ch0_diff_value.setText(str(max(y0Data) - min(y0Data)))
+        self.ch1_diff_value.setText(str(max(y1Data) - min(y1Data)))
+        self.ch2_diff_value.setText(str(max(y2Data) - min(y2Data)))
+        self.ch3_diff_value.setText(str(max(y3Data) - min(y3Data)))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
