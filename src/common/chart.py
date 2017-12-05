@@ -4,6 +4,8 @@ from PyQt5.QtChart import QChart, QLineSeries, QChartView, QValueAxis, QScatterS
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from src import *
+import datetime
 
 class Chart(QWidget):
     def __init__(self, ch0Name='ch0', ch1Name='ch1', ch2Name='ch2', ch3Name='ch3'):
@@ -136,16 +138,20 @@ class Chart(QWidget):
             self.axis_x.setRange(min(x0Data) - max(x0Data) // 10, max(x0Data) * 11 // 10)
             # self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
             self.axis_y.setRange(0, 1000)
+        try:
+            for i in range(0, len(x0Data)):
+                if self.ch0Enable.isChecked():
+                    self.chart1.append(QPoint(x0Data[i], y0Data[i]))
+                if self.ch1Enable.isChecked():
+                    self.chart2.append(QPoint(x1Data[i], y1Data[i]))
+                if self.ch2Enable.isChecked():
+                    self.chart3.append(QPoint(x2Data[i], y2Data[i]))
+                if self.ch3Enable.isChecked():
+                    self.chart4.append(QPoint(x3Data[i], y3Data[i]))
+        except:
+            pass
 
-        for i in range(0, len(x0Data)):
-            if self.ch0Enable.isChecked():
-                self.chart1.append(QPoint(x0Data[i], y0Data[i]))
-            if self.ch1Enable.isChecked():
-                self.chart2.append(QPoint(x1Data[i], y1Data[i]))
-            if self.ch2Enable.isChecked():
-                self.chart3.append(QPoint(x2Data[i], y2Data[i]))
-            if self.ch3Enable.isChecked():
-                self.chart4.append(QPoint(x3Data[i], y3Data[i]))
+        print(datetime.datetime.now())
         self.chartView.update()
 
     def fillAxisRange(self, data):

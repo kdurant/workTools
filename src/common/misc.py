@@ -1,4 +1,8 @@
 #-*- coding:utf-8 -*-
+
+import time
+from functools import wraps
+
 def diskInfo():
     '''
     找到系统有几块硬盘可用
@@ -52,3 +56,21 @@ def str2list(s, width):
         return [int(s[x:x + width], 16) for x in range(0, len(s), width)]
     else:
         print('hello world')
+
+
+def timethis(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        r = func(*args, **kwargs)
+        end = time.perf_counter()
+        print('{}.{} : {}'.format(func.__module__, func.__name__, end - start))
+        return r
+    return wrapper
+
+# @timethis
+# def countdown(n):
+#     while n > 0:
+#         n -= 1
+#
+# countdown(100000)

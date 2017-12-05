@@ -95,6 +95,8 @@ class UdpCore(QWidget):
         while self.udpSocket.hasPendingDatagrams():
             datagram, host, port = self.udpSocket.readDatagram(self.udpSocket.pendingDatagramSize())
             if datagram:
+
+                print(datagram)
                 self.recvDataReady.emit(datagram, host.toString(), port)
 
     @pyqtSlot()

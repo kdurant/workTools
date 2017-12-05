@@ -25,6 +25,7 @@ class DataAnalyze(QObject):
 
     def work(self):
         while self.runFlag:
+            QThread.msleep(5)
             if not self.q.empty():
                 data = self.q.get()
                 self.frame.config(data)
@@ -227,6 +228,7 @@ class CaptureBoard(QWidget):
 
     @pyqtSlot(list)
     def updateChart(self, data):
+        pass
         self.chart.update(data)
         self.chart.fillAxisRange(data)
         self.updateChInfo(data)

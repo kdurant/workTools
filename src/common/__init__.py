@@ -2,7 +2,7 @@
 
 # __all__ = ['diskInfo', 'readSector', 'eraserSector']
 
-from .misc import diskInfo, readSector, eraserSector, str2list
+from .misc import diskInfo, readSector, eraserSector, str2list, timethis
 
 from .protocol import EncodeProtocol, DecodeProtocol
 
