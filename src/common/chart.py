@@ -157,7 +157,7 @@ class Chart(QWidget):
     def mouseDoubleClickEvent(self, event):
         print('mouse double clicked')
         # self.chartView.resetTransform()
-        self.chart1.zoomReset()
+        # self.chart1.zoomReset()
 
     def mousePressEvent(self, event):
         print('mouse press')

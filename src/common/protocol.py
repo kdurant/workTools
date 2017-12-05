@@ -78,34 +78,45 @@ class DecodeProtocol():
         return  self.command
 
     def analyzeFrame(self):
+        '''
+        先收集到一次完整触发上传的数据
+        :return:
+        '''
         data_len = self.getDataLen()
         pck_num = self.getPckNum()
         data_s = ''
-        if self.getCommand() == 'a0000008':
+        if self.getCommand() == '80000006':
             if self.getPckNum() == 0 :
                 if len(self.ch_all_data) != 0:   # 需要处理已经接受到一次采集数据
                     ch_len = len(self.ch_all_data)
-                    self.ch0_xdata = list(range(0, ch_len//16))
-                    data_s = self.ch_all_data[0:ch_len//4]
+                    pos  = self.ch_all_data.find('eb90a55a0000')
+                    laserStartPos = int(self.ch_all_data[pos+12:pos+16], 16)
+                    laserLen = int(self.ch_all_data[pos+16:pos+20], 16)
+
+                    self.ch0_xdata = list(range(laserStartPos, laserStartPos+laserLen))
+                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
                     self.ch0_ydata = str2list(data_s, 4)
 
                     self.ch1_xdata = self.ch0_xdata
-                    data_s = self.ch_all_data[ch_len // 4:ch_len // 2]
+                    pos = self.ch_all_data.find('eb90a55a0f0f')
+                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
                     self.ch1_ydata = str2list(data_s, 4)
 
                     self.ch2_xdata = self.ch0_xdata
-                    data_s = self.ch_all_data[ch_len // 2:ch_len // 2+ch_len // 4]
+                    pos = self.ch_all_data.find('eb90a55af0f0')
+                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
                     self.ch2_ydata = str2list(data_s, 4)
 
                     self.ch3_xdata = self.ch0_xdata
-                    data_s = self.ch_all_data[ch_len // 2 + ch_len // 4:]
+                    pos = self.ch_all_data.find('eb90a55affff')
+                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
                     self.ch3_ydata = str2list(data_s, 4)
                     self.ch_all_data = ''
 
-                    self.ch_all_data += self.frame[48:560]
+                    self.ch_all_data += self.frame[48+176:560]
                     return True
                 else:           # 第一次收到上传数据
-                    self.ch_all_data += self.frame[48:560]
+                    self.ch_all_data += self.frame[48+176:560]
             else:
                 if data_len == 256:
                     self.ch_all_data += self.frame[48:560]

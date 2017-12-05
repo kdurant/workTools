@@ -28,14 +28,14 @@ class UdpCore(QWidget):
 
     def paraUI(self):
         groupBox = QGroupBox('参数设置')
-        # self.masterIP = QLineEdit('192.168.1.166')
-        self.masterIP = QLineEdit('127.0.0.1')
+        self.masterIP = QLineEdit('192.168.1.166')
+        # self.masterIP = QLineEdit('127.0.0.1')
         self.masterIP.setInputMask('000.000.000.000')
         self.masterIP.setToolTip('接收数据时，其他设备需要匹配本机IP地址和端口号')
         self.masterPort = QLineEdit('6666')
 
-        # self.targetIP = QLineEdit('192.168.1.102')
-        self.targetIP = QLineEdit('127.0.0.1')
+        self.targetIP = QLineEdit('192.168.1.102')
+        # self.targetIP = QLineEdit('127.0.0.1')
         self.targetIP.setInputMask('000.000.000.000')
         self.targetIP.setToolTip('发送数据时，本机需要匹配其他设备IP地址和端口号')
         self.targetPort = QLineEdit('4444')
@@ -95,7 +95,6 @@ class UdpCore(QWidget):
         while self.udpSocket.hasPendingDatagrams():
             datagram, host, port = self.udpSocket.readDatagram(self.udpSocket.pendingDatagramSize())
             if datagram:
-                print(datagram)
                 self.recvDataReady.emit(datagram, host.toString(), port)
 
     @pyqtSlot()
@@ -116,19 +115,19 @@ class UdpCore(QWidget):
         :return:
         '''
         if self.udpSocket.state() == QAbstractSocket.UnconnectedState:
-            return 'socket没有连接'
+            return [False, 'socket没有连接']
         elif self.udpSocket.state() == QAbstractSocket.HostLookupState:
-            return 'socket正在查找主机名称'
+            return [False, 'socket正在查找主机名称']
         elif self.udpSocket.state() == QAbstractSocket.ConnectingState:
-            return 'socket正在查找主机名称'
+            return [False, 'socket正在查找主机名称']
         elif self.udpSocket.state() == QAbstractSocket.ConnectedState:
-            return '连接已建立'
+            return [False, '连接已建立']
         elif self.udpSocket.state() == QAbstractSocket.BoundState:
-            return 'socket绑定到一个地址和端口'
+            return [True, 'socket绑定到一个地址和端口']
         elif self.udpSocket.state() == QAbstractSocket.ClosingState:
-            return 'socket即将关闭'
+            return [False, 'socket即将关闭']
         elif self.udpSocket.state() == QAbstractSocket.ConnectedState:
-            return '仅限内部使用'
+            return [False, '仅限内部使用']
 
 if __name__ == "__main__":
     import sys
