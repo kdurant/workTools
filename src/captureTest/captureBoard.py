@@ -24,10 +24,7 @@ class DataAnalyze(QObject):
         self.runFlag = False
 
     def work(self):
-        print('world')
         while self.runFlag:
-            # QThread.sleep(1)
-            # print('hello')
             if not self.q.empty():
                 data = self.q.get()
                 self.frame.config(data)
@@ -36,8 +33,6 @@ class DataAnalyze(QObject):
                                  self.frame.ch1_xdata, self.frame.ch1_ydata,
                                  self.frame.ch2_xdata, self.frame.ch2_ydata,
                                  self.frame.ch3_xdata, self.frame.ch3_ydata,]
-
-                    # print(laserData)
                     self.updateLaserData.emit(laserData)
 
 
@@ -80,8 +75,6 @@ class CaptureBoard(QWidget):
         hbox.addWidget(self.udpCore)
         hbox.addWidget(self.startBtn)
         hbox.addWidget(self.stopBtn)
-        # hbox.addWidget(self.dataCheck)
-
 
         leftLayout = QVBoxLayout()
         leftLayout.addLayout(hbox)
@@ -235,6 +228,7 @@ class CaptureBoard(QWidget):
     @pyqtSlot(list)
     def updateChart(self, data):
         self.chart.update(data)
+        self.chart.fillAxisRange(data)
         self.updateChInfo(data)
 
     def updateChInfo(self, data):

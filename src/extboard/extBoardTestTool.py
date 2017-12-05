@@ -111,7 +111,7 @@ class ExtBoard(QMainWindow):
     def processPendingDatagrams(self, datagram, host, port):
             data = b2a_hex(datagram)
             data = data.decode(encoding = 'utf-8')
-            if self.bindBtn.text() == '已经连接':
+            if self.udpCore.bindRbtn.isChecked():
                 if data[24:32] != '80000001':
                     self.recDataEdit.append(data)
 

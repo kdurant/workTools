@@ -18,6 +18,8 @@ class Top(QMainWindow):
         self.createToolBar()
 
         self.initUI()
+        self.setWindowTitle('测试工具')
+        self.resize(QSize(1000, 800))
 
         self.config = {
             'eraseDisk' : 0,
@@ -27,7 +29,6 @@ class Top(QMainWindow):
             'extBoard' : 4,
             'captureBoard' : 5
         }
-        self.resize(QSize(1000, 800))
 
     def initUI(self):
         self.readDiskStack = ReadDiskWidget()
@@ -50,7 +51,6 @@ class Top(QMainWindow):
         mainWidget = QWidget()
         mainWidget.setLayout(mainLayout)
         self.setCentralWidget(mainWidget)
-        self.resize(640, 500)
         pass
 
     def createToolBar(self):

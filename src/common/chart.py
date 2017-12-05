@@ -27,7 +27,7 @@ class Chart(QWidget):
         self.chart1.setPen(QPen(Qt.red))
         self.chart2 = QLineSeries()
         self.chart2.setName(self.ch1Name)
-        self.chart2.setPen(QPen(Qt.yellow))
+        self.chart2.setPen(QPen(Qt.darkYellow))
         self.chart3 = QLineSeries()
         self.chart3.setName(self.ch2Name)
         self.chart3.setPen(QPen(Qt.green))
@@ -127,7 +127,6 @@ class Chart(QWidget):
         #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
         # elif len(data) == 8:
         x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
-        self.fillAxisRange(x0Data, y0Data)
         self.chart1.clear()
         self.chart2.clear()
         self.chart3.clear()
@@ -149,17 +148,27 @@ class Chart(QWidget):
                 self.chart4.append(QPoint(x3Data[i], y3Data[i]))
         self.chartView.update()
 
-    def fillAxisRange(self, xData, yData):
-        self.xDataMinLine.setText(str(min(xData)*9//10))
-        self.xDataMaxLine.setText(str(max(xData)*11//10))
-        self.yDataMinLine.setText(str(min(yData)*9//10))
-        self.yDataMaxLine.setText(str(min(yData)*11//10))
+    def fillAxisRange(self, data):
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+        tmp = [min(x0Data), min(x1Data), min(x2Data), min(x3Data)]
+        xDataMin = min(tmp)
+        tmp = [max(x0Data), max(x1Data), max(x2Data), max(x3Data)]
+        xDataMax = max(tmp)
+        tmp = [min(y0Data), min(y1Data), min(y2Data), min(y3Data)]
+        yDataMin = min(tmp)
+        tmp = [max(y0Data), max(y1Data), max(y2Data), max(y3Data)]
+        yDataMax = max(tmp)
+        self.xDataMinLine.setText(str(xDataMin*9//10))
+        self.xDataMaxLine.setText(str(xDataMax*11//10))
+        self.yDataMinLine.setText(str(yDataMin*9//10))
+        self.yDataMaxLine.setText(str(yDataMax*11//10))
 
     @pyqtSlot()
     # def setAxisRange(self, xDataMin, xDataMax, yDataMin, yDataMax):
     #     self.axis_x.setRange(xDataMin, xDataMax)
     #     self.axis_y.setRange(yDataMin, yDataMax)
     def setAxisRange(self):
+        self.autoRefreshCb.setChecked(False)
         if self.xDataMinLine.text() and self.xDataMaxLine.text() and \
             self.yDataMinLine.text() and self.yDataMaxLine.text():
             self.axis_x.setRange(int(self.xDataMinLine.text()), int(self.xDataMaxLine.text()))
