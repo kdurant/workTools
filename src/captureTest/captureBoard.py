@@ -192,9 +192,18 @@ class CaptureBoard(QWidget):
         pass
         status = len(data[0]) == len(data[1]) == len(data[2]) == len(data[3]) == len(data[4]) == len(data[5]) == len(data[6]) == len(data[7])
         print(status)
-        self.chart.update(data)
-        self.chart.fillAxisRange(data)
-        self.updateChInfo(data)
+        if max(data[1]) > 1000:
+            print('000' + data[1])
+        if max(data[3]) > 1000:
+            print('111' + data[3])
+        if max(data[5]) > 1000:
+            print('222' + data[5])
+        if max(data[7]) > 1000:
+            print('333' + data[7])
+        QThread.msleep(5)
+        # self.chart.update(data)
+        # self.chart.fillAxisRange(data)
+        # self.updateChInfo(data)
 
     def updateChInfo(self, data):
         _, y0Data, _, y1Data, _, y2Data, _, y3Data = data
