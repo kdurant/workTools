@@ -115,7 +115,7 @@ class Chart(QWidget):
 
         self.setBtn.clicked.connect(self.setAxisRange)
         return frame
-
+    @timethis
     def update(self, data):
         '''
         :param data:
@@ -138,20 +138,15 @@ class Chart(QWidget):
             self.axis_x.setRange(min(x0Data) - max(x0Data) // 10, max(x0Data) * 11 // 10)
             # self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
             self.axis_y.setRange(0, 1000)
-        try:
-            for i in range(0, len(x0Data)):
-                if self.ch0Enable.isChecked():
-                    self.chart1.append(QPoint(x0Data[i], y0Data[i]))
-                if self.ch1Enable.isChecked():
-                    self.chart2.append(QPoint(x1Data[i], y1Data[i]))
-                if self.ch2Enable.isChecked():
-                    self.chart3.append(QPoint(x2Data[i], y2Data[i]))
-                if self.ch3Enable.isChecked():
-                    self.chart4.append(QPoint(x3Data[i], y3Data[i]))
-        except:
-            pass
-
-        print(datetime.datetime.now())
+        for i in range(0, len(x0Data)):
+            if self.ch0Enable.isChecked():
+                self.chart1.append(QPoint(x0Data[i], y0Data[i]))
+            if self.ch1Enable.isChecked():
+                self.chart2.append(QPoint(x1Data[i], y1Data[i]))
+            if self.ch2Enable.isChecked():
+                self.chart3.append(QPoint(x2Data[i], y2Data[i]))
+            if self.ch3Enable.isChecked():
+                self.chart4.append(QPoint(x3Data[i], y3Data[i]))
         self.chartView.update()
 
     def fillAxisRange(self, data):

@@ -86,9 +86,14 @@ class DecodeProtocol():
         pck_num = self.getPckNum()
         data_s = ''
         if self.getCommand() == '80000006':
-            if self.getPckNum() == 0 :
+            # if self.getPckNum() == 0 :
+            if self.getDataLen() != 256 : # 这是一次触发数据的最后一帧
+                self.ch_all_data += self.frame[48:48+data_len*2]
+
                 if len(self.ch_all_data) != 0:   # 需要处理已经接受到一次采集数据
                     ch_len = len(self.ch_all_data)
+                    print(ch_len)
+                    print(self.ch_all_data)
                     pos  = self.ch_all_data.find('eb90a55a0000')
                     laserStartPos = int(self.ch_all_data[pos+12:pos+16], 16)
                     laserLen = int(self.ch_all_data[pos+16:pos+20], 16)
@@ -112,16 +117,12 @@ class DecodeProtocol():
                     data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
                     self.ch3_ydata = str2list(data_s, 4)
                     self.ch_all_data = ''
-
-                    self.ch_all_data += self.frame[48+176:560]
                     return True
-                else:           # 第一次收到上传数据
-                    self.ch_all_data += self.frame[48+176:560]
             else:
-                if data_len == 256:
-                    self.ch_all_data += self.frame[48:560]
+                if self.getPckNum() == 0:
+                    self.ch_all_data += self.frame[48 + 176:560]
                 else:
-                    self.ch_all_data += self.frame[48:48+data_len*2]
+                    self.ch_all_data += self.frame[48:560]
 
         else:   # 如果一直上传
             self.cnt = 0

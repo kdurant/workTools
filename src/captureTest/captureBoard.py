@@ -7,38 +7,7 @@ import sys
 from binascii import a2b_hex, b2a_hex
 from src import *
 
-import queue
-
-class DataAnalyze(QObject):
-    updateLaserData = pyqtSignal(list)
-    def __init__(self, queue, frame):
-        super(DataAnalyze, self).__init__()
-        self.q = queue
-        self.frame = frame
-        self.runFlag = False
-
-    def start(self):
-        self.runFlag = True
-
-    def stop(self):
-        self.runFlag = False
-
-    def work(self):
-        while self.runFlag:
-            QThread.msleep(5)
-            if not self.q.empty():
-                data = self.q.get()
-                self.frame.config(data)
-                if self.frame.analyzeFrame() == True:
-                    laserData = [self.frame.ch0_xdata, self.frame.ch0_ydata,
-                                 self.frame.ch1_xdata, self.frame.ch1_ydata,
-                                 self.frame.ch2_xdata, self.frame.ch2_ydata,
-                                 self.frame.ch3_xdata, self.frame.ch3_ydata,]
-                    self.updateLaserData.emit(laserData)
-
-
 class CaptureBoard(QWidget):
-    startAnaylzeData = pyqtSignal()
     packetFrameDone = pyqtSignal([str])
     def __init__(self):
         super(CaptureBoard, self).__init__()
@@ -48,21 +17,10 @@ class CaptureBoard(QWidget):
 
         self.udpTxPck = EncodeProtocol()
         self.udpRxPck = DecodeProtocol()
-        self.waveQueue = queue.Queue(-1)
 
-        self.threadConfig()
+        # self.threadConfig()
         self.initUI()
         self.signalSlot()
-        self.startAnaylzeData.emit()
-
-    def threadConfig(self):
-        self.analyze = DataAnalyze(self.waveQueue, self.udpRxPck)
-        self.analyzeThread = QThread()
-        self.analyze.moveToThread(self.analyzeThread)
-        # self.analyzeThread.started.connect(self.analyze.work)
-
-        self.analyzeThread.start()
-        self.analyze.updateLaserData[list].connect(self.updateChart)
 
     def initUI(self):
         self.udpCore = UdpCore()
@@ -187,7 +145,6 @@ class CaptureBoard(QWidget):
         self.stopBtn.clicked.connect(self.configUdpFrame)
         self.packetFrameDone.connect(self.udpCore.sendFrame)
         self.udpCore.recvDataReady[bytes, str, int].connect(self.processPendingDatagrams)
-        self.startAnaylzeData.connect(self.analyze.work)
         pass
 
     @pyqtSlot()
@@ -201,14 +158,11 @@ class CaptureBoard(QWidget):
             data_len = '4'
 
             if sender.text() == '开始采集':
-                self.analyze.start()
-                self.startAnaylzeData.emit()
                 self.startBtn.setEnabled(False)
                 self.stopBtn.setEnabled(True)
                 data = '0101 0101'
             elif sender.text() == '停止采集':
                 data = '0000 0000'
-                self.analyze.stop()
                 self.startBtn.setEnabled(True)
                 self.stopBtn.setEnabled(False)
 
@@ -223,12 +177,21 @@ class CaptureBoard(QWidget):
     def processPendingDatagrams(self, datagram, host, port):
             data = b2a_hex(datagram)
             data = data.decode(encoding = 'utf-8')
+            print(data)
             if data[24:32] == '80000006':
-                self.waveQueue.put(data)
+                self.udpRxPck.config(data)
+                if self.udpRxPck.analyzeFrame() == True:
+                    laserData = [self.udpRxPck.ch0_xdata, self.udpRxPck.ch0_ydata,
+                                 self.udpRxPck.ch1_xdata, self.udpRxPck.ch1_ydata,
+                                 self.udpRxPck.ch2_xdata, self.udpRxPck.ch2_ydata,
+                                 self.udpRxPck.ch3_xdata, self.udpRxPck.ch3_ydata, ]
+                    self.updateChart(laserData)
 
     @pyqtSlot(list)
     def updateChart(self, data):
         pass
+        status = len(data[0]) == len(data[1]) == len(data[2]) == len(data[3]) == len(data[4]) == len(data[5]) == len(data[6]) == len(data[7])
+        print(status)
         self.chart.update(data)
         self.chart.fillAxisRange(data)
         self.updateChInfo(data)
