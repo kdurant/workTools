@@ -94,28 +94,7 @@ class DecodeProtocol():
                     ch_len = len(self.ch_all_data)
                     print(ch_len)
                     print(self.ch_all_data)
-                    pos  = self.ch_all_data.find('eb90a55a0000')
-                    laserStartPos = int(self.ch_all_data[pos+12:pos+16], 16)
-                    laserLen = int(self.ch_all_data[pos+16:pos+20], 16)
-
-                    self.ch0_xdata = list(range(laserStartPos, laserStartPos+laserLen))
-                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
-                    self.ch0_ydata = str2list(data_s, 4)
-
-                    self.ch1_xdata = self.ch0_xdata
-                    pos = self.ch_all_data.find('eb90a55a0f0f')
-                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
-                    self.ch1_ydata = str2list(data_s, 4)
-
-                    self.ch2_xdata = self.ch0_xdata
-                    pos = self.ch_all_data.find('eb90a55af0f0')
-                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
-                    self.ch2_ydata = str2list(data_s, 4)
-
-                    self.ch3_xdata = self.ch0_xdata
-                    pos = self.ch_all_data.find('eb90a55affff')
-                    data_s = self.ch_all_data[pos+20:pos+20+laserLen*4]
-                    self.ch3_ydata = str2list(data_s, 4)
+                    self.ch0_xdata, self.ch0_ydata, self.ch1_xdata, self.ch1_ydata, self.ch2_xdata, self.ch2_ydata, self.ch3_xdata, self.ch3_ydata = self.getChData(self.ch_all_data)
                     self.ch_all_data = ''
                     return True
             else:
@@ -131,3 +110,28 @@ class DecodeProtocol():
             else:
                 return False
 
+    def getChData(self, data):
+        pos = data.find('eb90a55a0000')
+        laserStartPos = int(data[pos + 12:pos + 16], 16)
+        laserLen = int(data[pos + 16:pos + 20], 16)
+
+        ch0_xdata = list(range(laserStartPos, laserStartPos + laserLen))
+        data_s = data[pos + 20:pos + 20 + laserLen * 4]
+        ch0_ydata = str2list(data_s, 4)
+
+        ch1_xdata = ch0_xdata
+        pos = data.find('eb90a55a0f0f')
+        data_s = data[pos + 20:pos + 20 + laserLen * 4]
+        ch1_ydata = str2list(data_s, 4)
+
+        ch2_xdata = ch0_xdata
+        pos = data.find('eb90a55af0f0')
+        data_s = data[pos + 20:pos + 20 + laserLen * 4]
+        ch2_ydata = str2list(data_s, 4)
+
+        ch3_xdata = ch0_xdata
+        pos = data.find('eb90a55affff')
+        data_s = data[pos + 20:pos + 20 + laserLen * 4]
+        ch3_ydata = str2list(data_s, 4)
+
+        return [ch0_xdata, ch0_ydata, ch1_xdata, ch1_ydata, ch2_xdata, ch2_ydata, ch3_xdata, ch3_ydata]

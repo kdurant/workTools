@@ -7,6 +7,14 @@ import sys
 from binascii import a2b_hex, b2a_hex
 from src import *
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s.%(msecs)d %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    filename='myapp.log',
+                    filemode='w')
+
 class CaptureBoard(QWidget):
     packetFrameDone = pyqtSignal([str])
     def __init__(self):
@@ -177,7 +185,8 @@ class CaptureBoard(QWidget):
     def processPendingDatagrams(self, datagram, host, port):
             data = b2a_hex(datagram)
             data = data.decode(encoding = 'utf-8')
-            print(data)
+            # print(data)
+            logging.debug('udp receive data is %s ' % data)
             if data[24:32] == '80000006':
                 self.udpRxPck.config(data)
                 if self.udpRxPck.analyzeFrame() == True:
@@ -185,25 +194,30 @@ class CaptureBoard(QWidget):
                                  self.udpRxPck.ch1_xdata, self.udpRxPck.ch1_ydata,
                                  self.udpRxPck.ch2_xdata, self.udpRxPck.ch2_ydata,
                                  self.udpRxPck.ch3_xdata, self.udpRxPck.ch3_ydata, ]
+
+                    QThread.msleep(5)
+                    logging.info('start chart')
                     self.updateChart(laserData)
 
     @pyqtSlot(list)
     def updateChart(self, data):
         pass
         status = len(data[0]) == len(data[1]) == len(data[2]) == len(data[3]) == len(data[4]) == len(data[5]) == len(data[6]) == len(data[7])
-        print(status)
+        logging.debug('This is debug message %s' % status)
         if max(data[1]) > 1000:
-            print('000' + data[1])
+            logging.critical('data[1] is %s' % data[1])
         if max(data[3]) > 1000:
-            print('111' + data[3])
+            logging.critical('data[3] is %s' % data[3])
         if max(data[5]) > 1000:
-            print('222' + data[5])
+            logging.critical('data[5] is %s' % data[5])
         if max(data[7]) > 1000:
-            print('333' + data[7])
-        QThread.msleep(5)
-        # self.chart.update(data)
-        # self.chart.fillAxisRange(data)
-        # self.updateChInfo(data)
+            logging.critical('data[7] is %s' % data[7])
+        self.chart.update(data)
+        # for i in range(0, 1000000):
+        #     pass
+        logging.info('end chart')
+        self.chart.fillAxisRange(data)
+        self.updateChInfo(data)
 
     def updateChInfo(self, data):
         _, y0Data, _, y1Data, _, y2Data, _, y3Data = data
