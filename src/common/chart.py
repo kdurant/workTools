@@ -51,6 +51,9 @@ class Chart(QWidget):
         self.axis_y.setTickCount(10)
         self.axis_x.setLabelFormat('%d')
         self.axis_y.setLabelFormat('%d')
+
+        self.axis_x.setRange(0, 1000)
+        self.axis_y.setRange(100, 300)
         self.chart.setAxisX(self.axis_x, self.chart1)
         self.chart.setAxisY(self.axis_y, self.chart1)
         self.chart.setAxisX(self.axis_x, self.chart2)
@@ -115,29 +118,14 @@ class Chart(QWidget):
 
         self.setBtn.clicked.connect(self.setAxisRange)
         return frame
-    @timethis
+
+    # @timethis
     def update(self, data):
-        '''
-        :param data:
-        :return:
-        '''
-        # if len(data) == 2:
-        #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
-        # elif len(data) == 4:
-        #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
-        # elif len(data) == 6:
-        #     x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
-        # elif len(data) == 8:
         x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
         self.chart1.clear()
         self.chart2.clear()
         self.chart3.clear()
         self.chart4.clear()
-
-        if self.autoRefreshCb.isChecked():
-            self.axis_x.setRange(min(x0Data) - max(x0Data) // 10, max(x0Data) * 11 // 10)
-            # self.axis_y.setRange(min(y0Data) - max(y0Data) // 10, max(y0Data) * 11 // 10)
-            self.axis_y.setRange(0, 1000)
         for i in range(0, len(x0Data)):
             if self.ch0Enable.isChecked():
                 self.chart1.append(QPoint(x0Data[i], y0Data[i]))
@@ -147,7 +135,7 @@ class Chart(QWidget):
                 self.chart3.append(QPoint(x2Data[i], y2Data[i]))
             if self.ch3Enable.isChecked():
                 self.chart4.append(QPoint(x3Data[i], y3Data[i]))
-        self.chartView.update()
+        # self.chartView.update()
 
     def fillAxisRange(self, data):
         x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
@@ -176,17 +164,6 @@ class Chart(QWidget):
             self.axis_y.setRange(int(self.yDataMinLine.text()), int(self.yDataMaxLine.text()))
         else:
             QMessageBox.warning(self, '警告', '缺少参数')
-
-    def mouseDoubleClickEvent(self, event):
-        print('mouse double clicked')
-        # self.chartView.resetTransform()
-        # self.chart1.zoomReset()
-
-    def mousePressEvent(self, event):
-        print('mouse press')
-
-    def mouseMoveEvent(self, event):
-        print('mouse move')
 
 
 class TestUi(QWidget):

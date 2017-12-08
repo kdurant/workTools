@@ -6,6 +6,7 @@ import sys
 
 from binascii import a2b_hex, b2a_hex
 from src import *
+import datetime
 
 import logging
 
@@ -186,7 +187,7 @@ class CaptureBoard(QWidget):
             data = b2a_hex(datagram)
             data = data.decode(encoding = 'utf-8')
             # print(data)
-            logging.debug('udp receive data is %s ' % data)
+            # logging.debug('udp receive data is %s ' % data)
             if data[24:32] == '80000006':
                 self.udpRxPck.config(data)
                 if self.udpRxPck.analyzeFrame() == True:
@@ -194,9 +195,6 @@ class CaptureBoard(QWidget):
                                  self.udpRxPck.ch1_xdata, self.udpRxPck.ch1_ydata,
                                  self.udpRxPck.ch2_xdata, self.udpRxPck.ch2_ydata,
                                  self.udpRxPck.ch3_xdata, self.udpRxPck.ch3_ydata, ]
-
-                    QThread.msleep(5)
-                    logging.info('start chart')
                     self.updateChart(laserData)
 
     @pyqtSlot(list)
@@ -213,9 +211,6 @@ class CaptureBoard(QWidget):
         if max(data[7]) > 1000:
             logging.critical('data[7] is %s' % data[7])
         self.chart.update(data)
-        # for i in range(0, 1000000):
-        #     pass
-        logging.info('end chart')
         self.chart.fillAxisRange(data)
         self.updateChInfo(data)
 

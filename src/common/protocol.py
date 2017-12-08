@@ -90,13 +90,13 @@ class DecodeProtocol():
             if self.getDataLen() != 256 : # 这是一次触发数据的最后一帧
                 self.ch_all_data += self.frame[48:48+data_len*2]
 
-                if len(self.ch_all_data) != 0:   # 需要处理已经接受到一次采集数据
-                    ch_len = len(self.ch_all_data)
-                    print(ch_len)
-                    print(self.ch_all_data)
+                if self.ch_all_data.count('eb90a55a0000') == 1:
                     self.ch0_xdata, self.ch0_ydata, self.ch1_xdata, self.ch1_ydata, self.ch2_xdata, self.ch2_ydata, self.ch3_xdata, self.ch3_ydata = self.getChData(self.ch_all_data)
                     self.ch_all_data = ''
                     return True
+                else:
+                    self.ch_all_data = ''
+                    return False
             else:
                 if self.getPckNum() == 0:
                     self.ch_all_data += self.frame[48 + 176:560]
