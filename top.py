@@ -1,15 +1,7 @@
 #-*- coding:utf-8 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-
-from src.erase.eraseDiskWidget import *
-from src.read.readDiskWidget import *
-from src.qss.qss import *
-from src.wave.waveTop import *
-from src.serial.serialTop import *
 
 from src import *
+
 
 
 class Top(QMainWindow):

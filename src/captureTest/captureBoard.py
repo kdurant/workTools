@@ -3,30 +3,20 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 import sys
+import logging
 
 from binascii import a2b_hex, b2a_hex
 from src import *
 import datetime
-
-import logging
-
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s.%(msecs)d %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    filename='myapp.log',
-                    filemode='w')
 
 class CaptureBoard(QWidget):
     packetFrameDone = pyqtSignal([str])
     def __init__(self):
         super(CaptureBoard, self).__init__()
         self.resize(QSize(1200, 600))
-
         self.frame = ''
-
         self.udpTxPck = EncodeProtocol()
         self.udpRxPck = DecodeProtocol()
-
         # self.threadConfig()
         self.initUI()
         self.signalSlot()
