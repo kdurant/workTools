@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 import sys
-import logging
+# import logging
 
 from binascii import a2b_hex, b2a_hex
 from src import *
@@ -179,6 +179,7 @@ class CaptureBoard(QWidget):
             # print(data)
             # logging.debug('udp receive data is %s ' % data)
             if data[24:32] == '80000006':
+                # logging.debug('receive data is %s' % data)
                 self.udpRxPck.config(data)
                 if self.udpRxPck.analyzeFrame() == True:
                     laserData = [self.udpRxPck.ch0_xdata, self.udpRxPck.ch0_ydata,
@@ -219,6 +220,8 @@ class CaptureBoard(QWidget):
         self.ch0_diff_value.setText(str(max(y0Data) - min(y0Data)))
         self.ch1_diff_value.setText(str(max(y1Data) - min(y1Data)))
         self.ch2_diff_value.setText(str(max(y2Data) - min(y2Data)))
+        if max(y2Data) - min(y2Data) >= 20:
+            logging.debug('y2data is %s' % y2Data)
         self.ch3_diff_value.setText(str(max(y3Data) - min(y3Data)))
 
         self.ch0_avr_value.setText(str(sum(y0Data)//len(y0Data)))
