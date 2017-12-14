@@ -1,6 +1,7 @@
 #-*- coding:utf-8 -*-
 
 from .misc import str2list
+
 class EncodeProtocol():
     def __init__(self, table = {}):
         self.pck_num = 8*'0'
@@ -86,23 +87,25 @@ class DecodeProtocol():
         pck_num = self.getPckNum()
         if self.getCommand() == '80000006':
             if pck_num == 0:
-                self.ch_all_data = ''
-            # if self.getPckNum() == 0 :
+                self.ch_all_data = ''   # 可能会丢数据
+                self.ch_all_data += self.frame[48 + 176:560]
+            else:
+                self.ch_all_data += self.frame[48:560]
+
             if self.getDataLen() != 256 : # 这是一次触发数据的最后一帧
                 self.ch_all_data += self.frame[48:48+data_len*2]
-                last_pck_num = self.getPckNum()
                 if self.ch_all_data.count('eb90a55a0000') == 1:
                     self.ch0_xdata, self.ch0_ydata, self.ch1_xdata, self.ch1_ydata, self.ch2_xdata, self.ch2_ydata, self.ch3_xdata, self.ch3_ydata = self.getChData(self.ch_all_data)
+                    # status = len(self.ch0_xdata) == len(self.ch0_ydata) == len(self.ch1_xdata) == len(self.ch1_ydata) == \
+                    #          len(self.ch2_xdata) == len(self.ch2_ydata) == len(self.ch3_xdata) == len(self.ch3_ydata)
+                    # logging.debug('This is debug message %s' % status)
+                    # if not status:
+                    #     logging.debug('current error data is %s' % self.ch_all_data)
                     self.ch_all_data = ''
                     return True
                 else:
                     self.ch_all_data = ''
                     return False
-            else:
-                if self.getPckNum() == 0:       # 每次从分包序号从0开始时，先清空以前数据
-                    self.ch_all_data += self.frame[48 + 176:560]
-                else:
-                    self.ch_all_data += self.frame[48:560]
 
 
     def getChData(self, data):

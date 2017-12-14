@@ -3,9 +3,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 import sys
-# import logging
 
 from binascii import a2b_hex, b2a_hex
+# from src import EncodeProtocol, DecodeProtocol, Chart, UdpCore
 from src import *
 import datetime
 
@@ -190,9 +190,6 @@ class CaptureBoard(QWidget):
 
     @pyqtSlot(list)
     def updateChart(self, data):
-        pass
-        status = len(data[0]) == len(data[1]) == len(data[2]) == len(data[3]) == len(data[4]) == len(data[5]) == len(data[6]) == len(data[7])
-        logging.debug('This is debug message %s' % status)
         if max(data[1]) > 1000:
             logging.critical('data[1] is %s' % data[1])
         if max(data[3]) > 1000:

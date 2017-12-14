@@ -8,6 +8,7 @@ from .protocol import EncodeProtocol, DecodeProtocol
 
 from .udpCore import UdpCore
 
+from .chart import Chart
 
 import logging
 
