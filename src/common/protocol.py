@@ -1,6 +1,7 @@
 #-*- coding:utf-8 -*-
 
 from .misc import str2list
+import logging
 
 class EncodeProtocol():
     def __init__(self, table = {}):
@@ -96,13 +97,12 @@ class DecodeProtocol():
                 self.ch_all_data += self.frame[48:48+data_len*2]
                 if self.ch_all_data.count('eb90a55a0000') == 1:
                     self.ch0_xdata, self.ch0_ydata, self.ch1_xdata, self.ch1_ydata, self.ch2_xdata, self.ch2_ydata, self.ch3_xdata, self.ch3_ydata = self.getChData(self.ch_all_data)
-                    # status = len(self.ch0_xdata) == len(self.ch0_ydata) == len(self.ch1_xdata) == len(self.ch1_ydata) == \
-                    #          len(self.ch2_xdata) == len(self.ch2_ydata) == len(self.ch3_xdata) == len(self.ch3_ydata)
-                    # logging.debug('This is debug message %s' % status)
-                    # if not status:
-                    #     logging.debug('current error data is %s' % self.ch_all_data)
-                    self.ch_all_data = ''
-                    return True
+                    if self.checkWaveData([self.ch0_xdata, self.ch0_ydata, self.ch1_xdata, self.ch1_ydata, self.ch2_xdata, self.ch2_ydata, self.ch3_xdata, self.ch3_ydata]):
+                        self.ch_all_data = ''
+                        return True
+                    else:
+                        self.ch_all_data = ''
+                        return False
                 else:
                     self.ch_all_data = ''
                     return False
@@ -133,3 +133,23 @@ class DecodeProtocol():
         ch3_ydata = str2list(data_s, 4)
 
         return [ch0_xdata, ch0_ydata, ch1_xdata, ch1_ydata, ch2_xdata, ch2_ydata, ch3_xdata, ch3_ydata]
+
+    def checkWaveData(self, data):
+        status = len(data[0]) == len(data[1]) == len(data[2]) == len(data[3]) == len(data[4]) == len(data[5]) == len(data[6]) == len(data[7])
+        logging.debug('This is debug message %s' % status)
+        if not status:
+            logging.debug('current error data is %s' % self.ch_all_data)
+            return False
+        if max(data[1]) > 1023:
+            logging.critical('ch0_ydata is %s' % data[1])
+            return False
+        if max(data[3]) > 1023:
+            logging.critical('ch1_ydata is %s' % data[3])
+            return False
+        if max(data[5]) > 1023:
+            logging.critical('ch2_ydata is %s' % data[5])
+            return False
+        if max(data[7]) > 1023:
+            logging.critical('ch3_ydata is %s' % data[7])
+            return False
+        return True
