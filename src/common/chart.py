@@ -130,10 +130,13 @@ class Chart(QWidget):
             for i in range(0, len(x0Data)):
                 if self.ch0Enable.isChecked():
                     self.chart1.append(QPoint(x0Data[i], y0Data[i]))
+            for i in range(0, len(x1Data)):
                 if self.ch1Enable.isChecked():
                     self.chart2.append(QPoint(x1Data[i], y1Data[i]))
+            for i in range(0, len(x2Data)):
                 if self.ch2Enable.isChecked():
                     self.chart3.append(QPoint(x2Data[i], y2Data[i]))
+            for i in range(0, len(x3Data)):
                 if self.ch3Enable.isChecked():
                     self.chart4.append(QPoint(x3Data[i], y3Data[i]))
         except:

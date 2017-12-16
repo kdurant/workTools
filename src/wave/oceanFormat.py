@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import logging
 '''
 根据协议获得各字段数据
 '''
@@ -157,7 +158,7 @@ class OceanFormat (object):
     def get_wave_len(self):
         self.wave_len = str((int(self.data[112:120], 16)))
 
-    def getCh0Data(self):
+    def getChData(self, flag):
         '''
         1. 找到第一段数据的起始位置，和数据长度
 
@@ -170,7 +171,7 @@ class OceanFormat (object):
         6a. 得到第二段数据的字符串格式
         6b. 获得第二段数据的y轴数据
         '''
-        index = self.data.find('eb90a55a0000')
+        index = self.data.find(flag)
         if index != -1:
             # 1.找到第一段数据的起始位置，和数据长度
             pos = index + 12
@@ -189,73 +190,17 @@ class OceanFormat (object):
 
             # # 4. 找到第二段数据的起始位置，和数据长度
             pos = index + (10+first_pick_len*2)*2
-            # second_start_pos = int(self.data[pos:pos+4], 16)
-            # second_pick_len = int(self.data[pos+4:pos+8], 16)
-            #
-            # # 5. 根据长度和起始位置，获得第一段数据的x轴坐标
-            # ch0_second_data_x = generate_x_coor(second_start_pos, second_pick_len)
-            # # 6a. 得到第一段数据的字符串格式
-            # pos = index + 20
-            # second_data_string = self.data[pos:pos+second_pick_len]
-            # # 6b. 获得第一段数据的y轴数据
-            # ch0_second_data_y = str2list(second_data_string, 4)
+            second_start_pos = int(self.data[pos:pos+4], 16)
+            second_pick_len = int(self.data[pos+4:pos+8], 16)
+            Xdata = Xdata + generate_x_coor(second_start_pos, second_pick_len)
+
+            pos = pos+8
+            second_data_string = self.data[pos : pos+second_pick_len*4]
+            Ydata = Ydata + str2list(second_data_string, 4)
             return Xdata, Ydata
         else:
             return [], []
 
-    def getCh1Data(self):
-        index = self.data.find('eb90a55a0f0f')
-        if index != -1:
-            pos = index + 12
-            first_start_pos = int(self.data[pos:pos+4], 16)
-            first_pick_len = int(self.data[pos+4:pos+8], 16)
-
-            Xdata = generate_x_coor(first_start_pos, first_pick_len)
-
-            pos = index + 20
-            first_data_string = self.data[pos:pos + first_pick_len*4]
-            Ydata = str2list(first_data_string, 4)
-
-            pos = index + (10+first_pick_len*2)*2
-            return Xdata, Ydata
-        else:
-            return [], []
-
-    def getCh2Data(self):
-        index = self.data.find('eb90a55af0f0')
-        if index != -1:
-            pos = index + 12
-            first_start_pos = int(self.data[pos:pos+4], 16)
-            first_pick_len = int(self.data[pos+4:pos+8], 16)
-
-            Xdata = generate_x_coor(first_start_pos, first_pick_len)
-
-            pos = index + 20
-            first_data_string = self.data[pos:pos + first_pick_len*4]
-            Ydata = str2list(first_data_string, 4)
-
-            pos = index + (10+first_pick_len*2)*2
-            return Xdata, Ydata
-        else:
-            return [], []
-
-    def getCh3Data(self):
-        index = self.data.find('eb90a55affff')
-        if index != -1:
-            pos = index + 12
-            first_start_pos = int(self.data[pos:pos+4], 16)
-            first_pick_len = int(self.data[pos+4:pos+8], 16)
-
-            Xdata = generate_x_coor(first_start_pos, first_pick_len)
-
-            pos = index + 20
-            first_data_string = self.data[pos:pos + first_pick_len*4]
-            Ydata = str2list(first_data_string, 4)
-
-            pos = index + (10+first_pick_len*2)*2
-            return Xdata, Ydata
-        else:
-            return [], []
     def analyze(self):
         self.getGPSWeek()
         self.getGPSSecond()

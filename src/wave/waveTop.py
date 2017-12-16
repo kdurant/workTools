@@ -37,16 +37,16 @@ class LaserDataAnaylze(QObject):
                         ocean.setData(capLaserData, curCapNum)   #
                         if capLaserData:
                             l = []
-                            Xdata, Ydata = ocean.getCh0Data()
+                            Xdata, Ydata = ocean.getChData('eb90a55a0000')
                             l.append(Xdata)
                             l.append(Ydata)
-                            Xdata, Ydata = ocean.getCh1Data()
+                            Xdata, Ydata = ocean.getChData('eb90a55a0f0f')
                             l.append(Xdata)
                             l.append(Ydata)
-                            Xdata, Ydata = ocean.getCh2Data()
+                            Xdata, Ydata = ocean.getChData('eb90a55af0f0')
                             l.append(Xdata)
                             l.append(Ydata)
-                            Xdata, Ydata = ocean.getCh3Data()
+                            Xdata, Ydata = ocean.getChData('eb90a55affff')
                             l.append(Xdata)
                             l.append(Ydata)
                             self.updateCapData.emit(l)
