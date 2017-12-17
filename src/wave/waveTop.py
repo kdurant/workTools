@@ -72,7 +72,10 @@ class WaveTop(QWidget):
     def initUI(self):
         self.selectFileUI = SelectFileUI()
         self.laserConfigUI = LaserConfigUI()
+        tab = QTabWidget()
         self.laserChart = Chart('apd', 'pmt1', 'pmt2', 'pmt3')
+        tab.addTab(self.laserChart, 'laser')
+        tab.addTab(QPushButton('motor'), 'motor cnt')
 
         leftLayout = QVBoxLayout()
         leftLayout.addWidget(self.selectFileUI)
@@ -80,7 +83,8 @@ class WaveTop(QWidget):
         leftLayout.addStretch(1)
 
         rightLayout = QVBoxLayout()
-        rightLayout.addWidget(self.laserChart)
+        # rightLayout.addWidget(self.laserChart)
+        rightLayout.addWidget(tab)
 
         mainLayout = QHBoxLayout()
         mainLayout.addLayout(leftLayout)
