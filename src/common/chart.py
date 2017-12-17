@@ -118,6 +118,10 @@ class Chart(QWidget):
         frame.setLayout(mainLayout)
 
         self.setBtn.clicked.connect(self.setAxisRange)
+        self.ch0Enable.clicked.connect(self.changeCh)
+        self.ch1Enable.clicked.connect(self.changeCh)
+        self.ch2Enable.clicked.connect(self.changeCh)
+        self.ch3Enable.clicked.connect(self.changeCh)
         return frame
 
     # @timethis
@@ -186,6 +190,28 @@ class Chart(QWidget):
             self.axis_y.setRange(int(self.yDataMinLine.text()), int(self.yDataMaxLine.text()))
         else:
             QMessageBox.warning(self, '警告', '缺少参数')
+
+    @pyqtSlot()
+    def changeCh(self):
+
+        self.chart1.clear()
+        self.chart2.clear()
+        self.chart3.clear()
+        self.chart4.clear()
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = self.data
+
+        for i in range(0, len(x0Data)):
+            if self.ch0Enable.isChecked():
+                self.chart1.append(QPoint(x0Data[i], y0Data[i]))
+        for i in range(0, len(x1Data)):
+            if self.ch1Enable.isChecked():
+                self.chart2.append(QPoint(x1Data[i], y1Data[i]))
+        for i in range(0, len(x2Data)):
+            if self.ch2Enable.isChecked():
+                self.chart3.append(QPoint(x2Data[i], y2Data[i]))
+        for i in range(0, len(x3Data)):
+            if self.ch3Enable.isChecked():
+                self.chart4.append(QPoint(x3Data[i], y3Data[i]))
 
 class TestUi(QWidget):
     def __init__(self):

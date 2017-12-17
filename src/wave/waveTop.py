@@ -15,7 +15,7 @@ class LaserDataAnaylze(QObject):
         super(LaserDataAnaylze, self).__init__()
         self.file = file
 
-    def configPara(self, enableAnaylze=True, intervalTime=100):
+    def configPara(self, enableAnaylze=True, intervalTime=400):
         self.enableAnaylze = enableAnaylze
         self.intervalTime = intervalTime
 

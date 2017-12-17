@@ -10,7 +10,7 @@ class LaserConfigUI(QWidget):
         groupBox = QGroupBox('激光波形参数')
         # 参数
         self.waveIntervalEdit = QLineEdit('1')
-        self.waveTimeEdit = QLineEdit('100')
+        self.waveTimeEdit = QLineEdit('400')
         intValidator = QIntValidator(20, 1000)
         self.waveTimeEdit.setValidator(intValidator)
         self.curWaveSerialLabel = QLabel('0')
