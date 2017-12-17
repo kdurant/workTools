@@ -23,9 +23,9 @@ class LaserDataAnaylze(QObject):
         print('hello')
         curCapNum = -1
         capLaserData = ''
-        with open(self.file, 'rb') as f:
-            while True:
-                if self.runFlag == True:
+        while True:
+            with open(self.file, 'rb') as f:
+                while self.runFlag:
                     text = f.read(4)
                     if not text:
                         break
@@ -34,7 +34,7 @@ class LaserDataAnaylze(QObject):
                     1. 找到head后发送数据去分析
                     2. 清除列表内容
                     '''
-                    if text == ocean.head:
+                    if text == ocean.head and capLaserData:
                         ocean.setData(capLaserData, curCapNum)   #
                         if capLaserData:
                             l = []
@@ -59,6 +59,8 @@ class LaserDataAnaylze(QObject):
                         self.updateCapNum.emit(curCapNum)
                     else:
                         capLaserData += text
+                else:
+                    capLaserData = ''
 
 
 class WaveTop(QWidget):
