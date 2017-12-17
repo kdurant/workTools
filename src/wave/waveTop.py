@@ -129,7 +129,8 @@ class WaveTop(QWidget):
 
     @pyqtSlot(list)
     def updateChart(self, data):
-        self.laserChart.update(data)
+        self.laserChart.data = data
+        self.laserChart.update()
 
     @pyqtSlot()
     def startAnaylzeThread(self):

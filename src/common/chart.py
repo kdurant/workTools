@@ -14,6 +14,7 @@ class Chart(QWidget):
         self.ch1Name = ch1Name
         self.ch2Name = ch2Name
         self.ch3Name = ch3Name
+        self.data = []
         self.initUI()
 
     def initUI(self):
@@ -120,8 +121,8 @@ class Chart(QWidget):
         return frame
 
     # @timethis
-    def update(self, data):
-        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+    def update(self):
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = self.data
         self.chart1.clear()
         self.chart2.clear()
         self.chart3.clear()
@@ -154,8 +155,8 @@ class Chart(QWidget):
             self.chart4.clear()
         # self.chartView.update()
 
-    def fillAxisRange(self, data):
-        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+    def fillAxisRange(self):
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = self.data
         tmp = [min(x0Data), min(x1Data), min(x2Data), min(x3Data)]
         xDataMin = min(tmp)
         tmp = [max(x0Data), max(x1Data), max(x2Data), max(x3Data)]
@@ -174,6 +175,7 @@ class Chart(QWidget):
     #     self.axis_x.setRange(xDataMin, xDataMax)
     #     self.axis_y.setRange(yDataMin, yDataMax)
     def setAxisRange(self):
+        self.fillAxisRange()
         self.autoRefreshCb.setChecked(False)
         if self.xDataMinLine.text() and self.xDataMaxLine.text() and \
             self.yDataMinLine.text() and self.yDataMaxLine.text():

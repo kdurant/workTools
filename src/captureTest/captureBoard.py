@@ -201,8 +201,8 @@ class CaptureBoard(QWidget):
             logging.critical('data[5] is %s' % data[5])
         if max(data[7]) > 1000:
             logging.critical('data[7] is %s' % data[7])
-        self.chart.update(data)
-        self.chart.fillAxisRange(data)
+        self.chart.data = data
+        self.chart.update()
         self.updateChInfo(data)
 
     def updateChInfo(self, data):
