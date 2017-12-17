@@ -13,9 +13,11 @@ class LaserDataAnaylze(QObject):
     updateCapData = pyqtSignal(list)
     def __init__(self):
         super(LaserDataAnaylze, self).__init__()
+        self.runFlag = False
 
     def setFile(self, file):
         self.file = file
+        self.f = open(self.file, 'rb')
 
     def configPara(self, runFlag=True, intervalTime=100):
         self.runFlag = runFlag
@@ -26,43 +28,42 @@ class LaserDataAnaylze(QObject):
         curCapNum = -1
         capLaserData = ''
         while True:
-            with open(self.file, 'rb') as f:
-                while self.runFlag:
-                    text = f.read(4)
-                    if not text:
-                        break
-                    text = binascii.b2a_hex(text).decode(encoding='utf8')
-                    '''
-                    1. 找到head后发送数据去分析
-                    2. 清除列表内容
-                    '''
-                    if text == ocean.head and capLaserData:
-                        ocean.setData(capLaserData, curCapNum)   #
-                        if capLaserData:
-                            l = []
-                            Xdata, Ydata = ocean.getChData('eb90a55a0000')
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            Xdata, Ydata = ocean.getChData('eb90a55a0f0f')
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            Xdata, Ydata = ocean.getChData('eb90a55af0f0')
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            Xdata, Ydata = ocean.getChData('eb90a55affff')
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            self.updateCapData.emit(l)
-                            QThread.msleep(self.intervalTime)
-                        capLaserData = ''
-                        capLaserData = ocean.head + capLaserData
-                        curCapNum += 1
-                        # if curCapNum % 100 == 0:      # 防止一直发送，阻塞主UI
-                        self.updateCapNum.emit(curCapNum)
-                    else:
-                        capLaserData += text
-                else:
+            if self.runFlag:
+                text = self.f.read(4)
+                if not text:
+                    break
+                text = binascii.b2a_hex(text).decode(encoding='utf8')
+                '''
+                1. 找到head后发送数据去分析
+                2. 清除列表内容
+                '''
+                if text == ocean.head and capLaserData:
+                    ocean.setData(capLaserData, curCapNum)   #
+                    if capLaserData:
+                        l = []
+                        Xdata, Ydata = ocean.getChData('eb90a55a0000')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        Xdata, Ydata = ocean.getChData('eb90a55a0f0f')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        Xdata, Ydata = ocean.getChData('eb90a55af0f0')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        Xdata, Ydata = ocean.getChData('eb90a55affff')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        self.updateCapData.emit(l)
+                        QThread.msleep(self.intervalTime)
                     capLaserData = ''
+                    capLaserData = ocean.head + capLaserData
+                    curCapNum += 1
+                    # if curCapNum % 100 == 0:      # 防止一直发送，阻塞主UI
+                    self.updateCapNum.emit(curCapNum)
+                else:
+                    capLaserData += text
+            else:
+                capLaserData = ''
 
 
 class WaveTop(QWidget):
@@ -73,6 +74,7 @@ class WaveTop(QWidget):
 
         self.initUI()
         self.signalSlot()
+        self.configThread()
 
     def initUI(self):
         self.selectFileUI = SelectFileUI()
@@ -125,7 +127,8 @@ class WaveTop(QWidget):
         if dlg.exec_():
             self.laserFile = dlg.selectedFiles()[0]
             self.isLoadFile = True
-            self.configThreadSignal.emit()
+            # self.configThreadSignal.emit()
+            self.analyze.setFile(self.laserFile)
         else:
             self.isLoadFile = False
 
