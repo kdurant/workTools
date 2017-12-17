@@ -11,20 +11,21 @@ ocean = OceanFormat()
 class LaserDataAnaylze(QObject):
     updateCapNum = pyqtSignal(int)
     updateCapData = pyqtSignal(list)
-    def __init__(self, file):
+    def __init__(self):
         super(LaserDataAnaylze, self).__init__()
-        self.file = file
 
-    def configPara(self, enableAnaylze=True, intervalTime=400):
-        self.enableAnaylze = enableAnaylze
+    def configPara(self, file, runFlag=True, intervalTime=100):
+        self.file = file
+        self.runFlag = runFlag
         self.intervalTime = intervalTime
 
     def analyze(self):
+        print('hello')
         curCapNum = -1
         capLaserData = ''
         with open(self.file, 'rb') as f:
             while True:
-                if self.enableAnaylze == True:
+                if self.runFlag == True:
                     text = f.read(4)
                     if not text:
                         break
@@ -103,7 +104,8 @@ class WaveTop(QWidget):
 
     @pyqtSlot()
     def configThread(self):
-        self.analyze = LaserDataAnaylze(self.laserFile)
+        self.analyze = LaserDataAnaylze()
+        # self.analyze.configPara(True, self.laserFile, int(self.laserConfigUI.waveTimeEdit.text()))
         self.analyzeThread = QThread()
         self.analyze.moveToThread(self.analyzeThread)
         self.analyzeThread.started.connect(self.analyze.analyze)
@@ -135,7 +137,7 @@ class WaveTop(QWidget):
     @pyqtSlot()
     def startAnaylzeThread(self):
         if self.laserFile:  # 如果加载了文件
-            self.analyze.configPara(True, int(self.laserConfigUI.waveTimeEdit.text()))
+            self.analyze.configPara(self.laserFile, True, int(self.laserConfigUI.waveTimeEdit.text()))
             self.laserConfigUI.startBtn.setEnabled(False)
             self.laserConfigUI.pauseBtn.setEnabled(True)
             self.laserConfigUI.stopBtn.setEnabled(True)
@@ -146,7 +148,7 @@ class WaveTop(QWidget):
 
     @pyqtSlot()
     def pauseAnaylze(self):
-        self.analyze.configPara(False)
+        self.analyze.configPara(self.laserFile, False)
         self.laserConfigUI.startBtn.setEnabled(True)
         self.laserConfigUI.pauseBtn.setEnabled(False)
         self.laserConfigUI.stopBtn.setEnabled(False)
