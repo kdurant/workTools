@@ -14,8 +14,10 @@ class LaserDataAnaylze(QObject):
     def __init__(self):
         super(LaserDataAnaylze, self).__init__()
 
-    def configPara(self, file, runFlag=True, intervalTime=100):
+    def setFile(self, file):
         self.file = file
+
+    def configPara(self, runFlag=True, intervalTime=100):
         self.runFlag = runFlag
         self.intervalTime = intervalTime
 
@@ -139,7 +141,8 @@ class WaveTop(QWidget):
     @pyqtSlot()
     def startAnaylzeThread(self):
         if self.laserFile:  # 如果加载了文件
-            self.analyze.configPara(self.laserFile, True, int(self.laserConfigUI.waveTimeEdit.text()))
+            self.analyze.setFile(self.laserFile)
+            self.analyze.configPara(True, int(self.laserConfigUI.waveTimeEdit.text()))
             self.laserConfigUI.startBtn.setEnabled(False)
             self.laserConfigUI.pauseBtn.setEnabled(True)
             self.laserConfigUI.stopBtn.setEnabled(True)
@@ -150,7 +153,7 @@ class WaveTop(QWidget):
 
     @pyqtSlot()
     def pauseAnaylze(self):
-        self.analyze.configPara(self.laserFile, False)
+        self.analyze.configPara(False)
         self.laserConfigUI.startBtn.setEnabled(True)
         self.laserConfigUI.pauseBtn.setEnabled(False)
         self.laserConfigUI.stopBtn.setEnabled(False)
