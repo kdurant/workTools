@@ -155,6 +155,10 @@ class Chart(QWidget):
             self.chart4.clear()
         # self.chartView.update()
 
+        if self.autoRefreshCb.isChecked():
+            self.fillAxisRange()
+            self.setAxisRange()
+
     def fillAxisRange(self):
         x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = self.data
         tmp = [min(x0Data), min(x1Data), min(x2Data), min(x3Data)]
@@ -165,25 +169,23 @@ class Chart(QWidget):
         yDataMin = min(tmp)
         tmp = [max(y0Data), max(y1Data), max(y2Data), max(y3Data)]
         yDataMax = max(tmp)
-        self.xDataMinLine.setText(str(xDataMin*9//10))
-        self.xDataMaxLine.setText(str(xDataMax*11//10))
-        self.yDataMinLine.setText(str(yDataMin*9//10))
-        self.yDataMaxLine.setText(str(yDataMax*11//10))
+
+        xDataAvr = (xDataMin + xDataMax) // 2
+        yDataAvr = (yDataMin + yDataMax) // 2
+
+        self.xDataMinLine.setText(str(xDataAvr - xDataAvr*6//5))
+        self.xDataMaxLine.setText(str(xDataAvr + xDataAvr*6//5))
+        self.yDataMinLine.setText(str(yDataAvr - yDataAvr*6//5))
+        self.yDataMaxLine.setText(str(yDataAvr + yDataAvr*6//5))
 
     @pyqtSlot()
-    # def setAxisRange(self, xDataMin, xDataMax, yDataMin, yDataMax):
-    #     self.axis_x.setRange(xDataMin, xDataMax)
-    #     self.axis_y.setRange(yDataMin, yDataMax)
     def setAxisRange(self):
-        self.fillAxisRange()
-        self.autoRefreshCb.setChecked(False)
         if self.xDataMinLine.text() and self.xDataMaxLine.text() and \
             self.yDataMinLine.text() and self.yDataMaxLine.text():
             self.axis_x.setRange(int(self.xDataMinLine.text()), int(self.xDataMaxLine.text()))
             self.axis_y.setRange(int(self.yDataMinLine.text()), int(self.yDataMaxLine.text()))
         else:
             QMessageBox.warning(self, '警告', '缺少参数')
-
 
 class TestUi(QWidget):
     def __init__(self):
