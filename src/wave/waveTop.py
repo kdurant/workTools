@@ -41,7 +41,7 @@ class LaserDataAnaylze(QObject):
                 if text == laserWave.head and capLaserData:
                     laserWave.setData(capLaserData, curCapNum)   #
                     if capLaserData:
-                        l = laserWave.getChData('oecan')
+                        l = laserWave.getChData(self.fileType)
                         self.updateCapData.emit(l)
                         QThread.msleep(self.intervalTime)
                     capLaserData = ''

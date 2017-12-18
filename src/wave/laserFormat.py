@@ -160,8 +160,73 @@ class LaserFormat (object):
             return self.getLandData()
         else:
             return self.getOeacnData()
+
     def getLandData(self):
-        pass
+        pos = 176
+        first_start_pos = int(self.data[pos:pos + 4], 16)
+        first_pick_len = int(self.data[pos + 4:pos + 8], 16)
+        X0data = [i + first_start_pos for i in range(first_pick_len)]
+
+        pos = pos + 8
+        first_data_string = self.data[pos:pos + first_pick_len * 4]
+        Y0data = str2list(first_data_string, 4)
+
+        try:
+            pos = pos + first_pick_len * 4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            X1data = [i + second_start_pos for i in range(second_pick_len)]
+            print(X1data)
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            Y1data = str2list(second_data_string, 4)
+        except IndexError:
+            pass
+
+        try:
+            pos = pos + second_pick_len*4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            tmp = [i + second_start_pos for i in range(second_pick_len)]
+            X1data = list(set(X1data + tmp))
+            X1data.sort()
+
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            tmp = str2list(second_data_string, 4)
+            Y1data = Y1data + tmp
+        except IndexError:
+            pass
+        try:
+            pos = pos + second_pick_len*4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            tmp = [i + second_start_pos for i in range(second_pick_len)]
+            X1data = list(set(X1data + tmp))
+            X1data.sort()
+
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            tmp = str2list(second_data_string, 4)
+            Y1data = Y1data + tmp
+        except IndexError:
+            pass
+        try:
+            pos = pos + second_pick_len*4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            tmp = [i + second_start_pos for i in range(second_pick_len)]
+            X1data = list(set(X1data + tmp))
+            X1data.sort()
+
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            tmp = str2list(second_data_string, 4)
+            Y1data = Y1data + tmp
+        except IndexError:
+            pass
+
+        return [X0data, Y0data, X1data, Y1data, X0data, Y0data, X0data, Y0data]
 
     def getOeacnData(self):
         l = []
