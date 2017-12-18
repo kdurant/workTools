@@ -16,14 +16,6 @@ def str2list(s, width):
 def find_all(string, sub_str):
     return [i for i in range(len(string)) if s[i:].startswith(sub_str)]
 
-def generate_x_coor(start_pos, length):
-    '''给定起始位置，和长度，生成x轴的坐标'''
-    '''start_pos: 10进制， length: 10进制'''
-    l = []
-    for i in range(length):
-        l.append(i+start_pos)
-    return l
-
 class LaserFormat (object):
     def __init__(self):  #构造方法
         self.data = ''
@@ -179,7 +171,7 @@ class LaserFormat (object):
             first_pick_len = int(self.data[pos+4:pos+8], 16)
 
             # 2. 根据长度和起始位置，获得第一段数据的x轴坐标
-            Xdata = generate_x_coor(first_start_pos, first_pick_len)
+            Xdata = [ i+first_start_pos for i in range(first_pick_len)]
 
             # 3a. 得到第一段数据的字符串格式
             pos = index + 20
@@ -192,7 +184,7 @@ class LaserFormat (object):
             pos = index + (10+first_pick_len*2)*2
             second_start_pos = int(self.data[pos:pos+4], 16)
             second_pick_len = int(self.data[pos+4:pos+8], 16)
-            Xdata = Xdata + generate_x_coor(second_start_pos, second_pick_len)
+            Xdata = Xdata + [ i+second_start_pos for i in range(second_pick_len)]
 
             pos = pos+8
             second_data_string = self.data[pos : pos+second_pick_len*4]
