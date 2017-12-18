@@ -6,7 +6,7 @@ from ..wave.laserConfig import *
 from ..wave.laserFormat import LaserFormat
 from ..wave.selectFileUI import *
 
-ocean = LaserFormat()
+laserWave = LaserFormat()
 
 class LaserDataAnaylze(QObject):
     updateCapNum = pyqtSignal(int)
@@ -38,26 +38,26 @@ class LaserDataAnaylze(QObject):
                 1. 找到head后发送数据去分析
                 2. 清除列表内容
                 '''
-                if text == ocean.head and capLaserData:
-                    ocean.setData(capLaserData, curCapNum)   #
+                if text == laserWave.head and capLaserData:
+                    laserWave.setData(capLaserData, curCapNum)   #
                     if capLaserData:
                         l = []
-                        Xdata, Ydata = ocean.getChData('eb90a55a0000')
+                        Xdata, Ydata = laserWave.getChData('eb90a55a0000')
                         l.append(Xdata)
                         l.append(Ydata)
-                        Xdata, Ydata = ocean.getChData('eb90a55a0f0f')
+                        Xdata, Ydata = laserWave.getChData('eb90a55a0f0f')
                         l.append(Xdata)
                         l.append(Ydata)
-                        Xdata, Ydata = ocean.getChData('eb90a55af0f0')
+                        Xdata, Ydata = laserWave.getChData('eb90a55af0f0')
                         l.append(Xdata)
                         l.append(Ydata)
-                        Xdata, Ydata = ocean.getChData('eb90a55affff')
+                        Xdata, Ydata = laserWave.getChData('eb90a55affff')
                         l.append(Xdata)
                         l.append(Ydata)
                         self.updateCapData.emit(l)
                         QThread.msleep(self.intervalTime)
                     capLaserData = ''
-                    capLaserData = ocean.head + capLaserData
+                    capLaserData = laserWave.head + capLaserData
                     curCapNum += 1
                     # if curCapNum % 100 == 0:      # 防止一直发送，阻塞主UI
                     self.updateCapNum.emit(curCapNum)
