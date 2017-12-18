@@ -101,6 +101,11 @@ class LaserFormat (object):
         self.len_error = []
 
     def setData(self, data, trg):
+        '''
+        :param data: 一次采集的全部数据
+        :param trg:
+        :return:
+        '''
         if data:
             self.data = data
         self.trg = trg
@@ -150,7 +155,31 @@ class LaserFormat (object):
     def get_wave_len(self):
         self.wave_len = str((int(self.data[112:120], 16)))
 
-    def getChData(self, flag):
+    def getChData(self, type='land'):
+        if type == 'land':
+            return self.getLandData()
+        else:
+            return self.getOeacnData()
+    def getLandData(self):
+        pass
+
+    def getOeacnData(self):
+        l = []
+        Xdata, Ydata = self.getOeacnChData('eb90a55a0000')
+        l.append(Xdata)
+        l.append(Ydata)
+        Xdata, Ydata = self.getOeacnChData('eb90a55a0f0f')
+        l.append(Xdata)
+        l.append(Ydata)
+        Xdata, Ydata = self.getOeacnChData('eb90a55af0f0')
+        l.append(Xdata)
+        l.append(Ydata)
+        Xdata, Ydata = self.getOeacnChData('eb90a55affff')
+        l.append(Xdata)
+        l.append(Ydata)
+        return l
+
+    def getOeacnChData(self, flag='eb90a55a0000'):
         '''
         1. 找到第一段数据的起始位置，和数据长度
 
@@ -192,6 +221,7 @@ class LaserFormat (object):
             return Xdata, Ydata
         else:
             return [], []
+
 
     def analyze(self):
         self.getGPSWeek()
