@@ -24,7 +24,7 @@ def generate_x_coor(start_pos, length):
         l.append(i+start_pos)
     return l
 
-class OceanFormat (object):
+class LaserFormat (object):
     def __init__(self):  #构造方法
         self.data = ''
         self.trg = 0

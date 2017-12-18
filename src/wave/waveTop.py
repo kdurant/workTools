@@ -3,10 +3,10 @@ import binascii
 
 from src.common.chart import Chart
 from ..wave.laserConfig import *
-from ..wave.oceanFormat import OceanFormat
+from ..wave.laserFormat import LaserFormat
 from ..wave.selectFileUI import *
 
-ocean = OceanFormat()
+ocean = LaserFormat()
 
 class LaserDataAnaylze(QObject):
     updateCapNum = pyqtSignal(int)
@@ -15,9 +15,10 @@ class LaserDataAnaylze(QObject):
         super(LaserDataAnaylze, self).__init__()
         self.runFlag = False
 
-    def setFile(self, file):
+    def setFile(self, file, type = 'land'):
         self.file = file
         self.f = open(self.file, 'rb')
+        self.fileType = type
 
     def configPara(self, runFlag=True, intervalTime=100):
         self.runFlag = runFlag
@@ -128,7 +129,10 @@ class WaveTop(QWidget):
             self.laserFile = dlg.selectedFiles()[0]
             self.isLoadFile = True
             # self.configThreadSignal.emit()
-            self.analyze.setFile(self.laserFile)
+            if self.selectFileUI.landRbtn.isChecked():
+                self.analyze.setFile(self.laserFile, 'land')
+            else:
+                self.analyze.setFile(self.laserFile, 'ocean')
         else:
             self.isLoadFile = False
 
