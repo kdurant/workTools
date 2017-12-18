@@ -11,53 +11,59 @@ ocean = OceanFormat()
 class LaserDataAnaylze(QObject):
     updateCapNum = pyqtSignal(int)
     updateCapData = pyqtSignal(list)
-    def __init__(self, file):
+    def __init__(self):
         super(LaserDataAnaylze, self).__init__()
-        self.file = file
+        self.runFlag = False
 
-    def configPara(self, enableAnaylze=True, intervalTime=100):
-        self.enableAnaylze = enableAnaylze
+    def setFile(self, file):
+        self.file = file
+        self.f = open(self.file, 'rb')
+
+    def configPara(self, runFlag=True, intervalTime=100):
+        self.runFlag = runFlag
         self.intervalTime = intervalTime
 
     def analyze(self):
+        print('hello')
         curCapNum = -1
         capLaserData = ''
-        with open(self.file, 'rb') as f:
-            while True:
-                if self.enableAnaylze == True:
-                    text = f.read(4)
-                    if not text:
-                        break
-                    text = binascii.b2a_hex(text).decode(encoding='utf8')
-                    '''
-                    1. 找到head后发送数据去分析
-                    2. 清除列表内容
-                    '''
-                    if text == ocean.head:
-                        ocean.setData(capLaserData, curCapNum)   #
-                        if capLaserData:
-                            l = []
-                            Xdata, Ydata = ocean.getCh0Data()
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            Xdata, Ydata = ocean.getCh1Data()
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            Xdata, Ydata = ocean.getCh2Data()
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            Xdata, Ydata = ocean.getCh3Data()
-                            l.append(Xdata)
-                            l.append(Ydata)
-                            self.updateCapData.emit(l)
-                            QThread.msleep(self.intervalTime)
-                        capLaserData = ''
-                        capLaserData = ocean.head + capLaserData
-                        curCapNum += 1
-                        # if curCapNum % 100 == 0:      # 防止一直发送，阻塞主UI
-                        self.updateCapNum.emit(curCapNum)
-                    else:
-                        capLaserData += text
+        while True:
+            if self.runFlag:
+                text = self.f.read(4)
+                if not text:
+                    break
+                text = binascii.b2a_hex(text).decode(encoding='utf8')
+                '''
+                1. 找到head后发送数据去分析
+                2. 清除列表内容
+                '''
+                if text == ocean.head and capLaserData:
+                    ocean.setData(capLaserData, curCapNum)   #
+                    if capLaserData:
+                        l = []
+                        Xdata, Ydata = ocean.getChData('eb90a55a0000')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        Xdata, Ydata = ocean.getChData('eb90a55a0f0f')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        Xdata, Ydata = ocean.getChData('eb90a55af0f0')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        Xdata, Ydata = ocean.getChData('eb90a55affff')
+                        l.append(Xdata)
+                        l.append(Ydata)
+                        self.updateCapData.emit(l)
+                        QThread.msleep(self.intervalTime)
+                    capLaserData = ''
+                    capLaserData = ocean.head + capLaserData
+                    curCapNum += 1
+                    # if curCapNum % 100 == 0:      # 防止一直发送，阻塞主UI
+                    self.updateCapNum.emit(curCapNum)
+                else:
+                    capLaserData += text
+            else:
+                capLaserData = ''
 
 
 class WaveTop(QWidget):
@@ -68,11 +74,15 @@ class WaveTop(QWidget):
 
         self.initUI()
         self.signalSlot()
+        self.configThread()
 
     def initUI(self):
         self.selectFileUI = SelectFileUI()
         self.laserConfigUI = LaserConfigUI()
+        tab = QTabWidget()
         self.laserChart = Chart('apd', 'pmt1', 'pmt2', 'pmt3')
+        tab.addTab(self.laserChart, 'laser')
+        tab.addTab(QPushButton('motor'), 'motor cnt')
 
         leftLayout = QVBoxLayout()
         leftLayout.addWidget(self.selectFileUI)
@@ -80,7 +90,8 @@ class WaveTop(QWidget):
         leftLayout.addStretch(1)
 
         rightLayout = QVBoxLayout()
-        rightLayout.addWidget(self.laserChart)
+        # rightLayout.addWidget(self.laserChart)
+        rightLayout.addWidget(tab)
 
         mainLayout = QHBoxLayout()
         mainLayout.addLayout(leftLayout)
@@ -99,7 +110,8 @@ class WaveTop(QWidget):
 
     @pyqtSlot()
     def configThread(self):
-        self.analyze = LaserDataAnaylze(self.laserFile)
+        self.analyze = LaserDataAnaylze()
+        # self.analyze.configPara(True, self.laserFile, int(self.laserConfigUI.waveTimeEdit.text()))
         self.analyzeThread = QThread()
         self.analyze.moveToThread(self.analyzeThread)
         self.analyzeThread.started.connect(self.analyze.analyze)
@@ -115,7 +127,8 @@ class WaveTop(QWidget):
         if dlg.exec_():
             self.laserFile = dlg.selectedFiles()[0]
             self.isLoadFile = True
-            self.configThreadSignal.emit()
+            # self.configThreadSignal.emit()
+            self.analyze.setFile(self.laserFile)
         else:
             self.isLoadFile = False
 
@@ -125,11 +138,13 @@ class WaveTop(QWidget):
 
     @pyqtSlot(list)
     def updateChart(self, data):
-        self.laserChart.update(data)
+        self.laserChart.data = data
+        self.laserChart.update()
 
     @pyqtSlot()
     def startAnaylzeThread(self):
         if self.laserFile:  # 如果加载了文件
+            self.analyze.setFile(self.laserFile)
             self.analyze.configPara(True, int(self.laserConfigUI.waveTimeEdit.text()))
             self.laserConfigUI.startBtn.setEnabled(False)
             self.laserConfigUI.pauseBtn.setEnabled(True)

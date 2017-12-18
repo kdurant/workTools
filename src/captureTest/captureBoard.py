@@ -190,8 +190,8 @@ class CaptureBoard(QWidget):
 
     @pyqtSlot(list)
     def updateChart(self, data):
-        self.chart.update(data)
-        self.chart.fillAxisRange(data)
+        self.chart.data = data
+        self.chart.update()
         self.updateChInfo(data)
 
     def updateChInfo(self, data):

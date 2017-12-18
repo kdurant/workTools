@@ -13,6 +13,7 @@ class Chart(QWidget):
         self.ch1Name = ch1Name
         self.ch2Name = ch2Name
         self.ch3Name = ch3Name
+        self.data = []
         self.initUI()
 
     def initUI(self):
@@ -116,11 +117,15 @@ class Chart(QWidget):
         frame.setLayout(mainLayout)
 
         self.setBtn.clicked.connect(self.setAxisRange)
+        self.ch0Enable.clicked.connect(self.changeCh)
+        self.ch1Enable.clicked.connect(self.changeCh)
+        self.ch2Enable.clicked.connect(self.changeCh)
+        self.ch3Enable.clicked.connect(self.changeCh)
         return frame
 
     # @timethis
-    def update(self, data):
-        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+    def update(self):
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = self.data
         self.chart1.clear()
         self.chart2.clear()
         self.chart3.clear()
@@ -129,10 +134,13 @@ class Chart(QWidget):
             for i in range(0, len(x0Data)):
                 if self.ch0Enable.isChecked():
                     self.chart1.append(QPoint(x0Data[i], y0Data[i]))
+            for i in range(0, len(x1Data)):
                 if self.ch1Enable.isChecked():
                     self.chart2.append(QPoint(x1Data[i], y1Data[i]))
+            for i in range(0, len(x2Data)):
                 if self.ch2Enable.isChecked():
                     self.chart3.append(QPoint(x2Data[i], y2Data[i]))
+            for i in range(0, len(x3Data)):
                 if self.ch3Enable.isChecked():
                     self.chart4.append(QPoint(x3Data[i], y3Data[i]))
         except:
@@ -146,8 +154,12 @@ class Chart(QWidget):
             self.chart4.clear()
         # self.chartView.update()
 
-    def fillAxisRange(self, data):
-        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = data
+        if self.autoRefreshCb.isChecked():
+            self.fillAxisRange()
+            self.setAxisRange()
+
+    def fillAxisRange(self):
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = self.data
         tmp = [min(x0Data), min(x1Data), min(x2Data), min(x3Data)]
         xDataMin = min(tmp)
         tmp = [max(x0Data), max(x1Data), max(x2Data), max(x3Data)]
@@ -156,17 +168,17 @@ class Chart(QWidget):
         yDataMin = min(tmp)
         tmp = [max(y0Data), max(y1Data), max(y2Data), max(y3Data)]
         yDataMax = max(tmp)
-        self.xDataMinLine.setText(str(xDataMin*9//10))
-        self.xDataMaxLine.setText(str(xDataMax*11//10))
-        self.yDataMinLine.setText(str(yDataMin*9//10))
-        self.yDataMaxLine.setText(str(yDataMax*11//10))
+
+        xDataAvr = (xDataMin + xDataMax) // 2
+        yDataAvr = (yDataMin + yDataMax) // 2
+
+        self.xDataMinLine.setText(str(xDataAvr - xDataAvr*6//5))
+        self.xDataMaxLine.setText(str(xDataAvr + xDataAvr*6//5))
+        self.yDataMinLine.setText(str(yDataAvr - yDataAvr*6//5))
+        self.yDataMaxLine.setText(str(yDataAvr + yDataAvr*6//5))
 
     @pyqtSlot()
-    # def setAxisRange(self, xDataMin, xDataMax, yDataMin, yDataMax):
-    #     self.axis_x.setRange(xDataMin, xDataMax)
-    #     self.axis_y.setRange(yDataMin, yDataMax)
     def setAxisRange(self):
-        self.autoRefreshCb.setChecked(False)
         if self.xDataMinLine.text() and self.xDataMaxLine.text() and \
             self.yDataMinLine.text() and self.yDataMaxLine.text():
             self.axis_x.setRange(int(self.xDataMinLine.text()), int(self.xDataMaxLine.text()))
@@ -174,6 +186,27 @@ class Chart(QWidget):
         else:
             QMessageBox.warning(self, '警告', '缺少参数')
 
+    @pyqtSlot()
+    def changeCh(self):
+
+        self.chart1.clear()
+        self.chart2.clear()
+        self.chart3.clear()
+        self.chart4.clear()
+        x0Data, y0Data, x1Data, y1Data, x2Data, y2Data, x3Data, y3Data = self.data
+
+        for i in range(0, len(x0Data)):
+            if self.ch0Enable.isChecked():
+                self.chart1.append(QPoint(x0Data[i], y0Data[i]))
+        for i in range(0, len(x1Data)):
+            if self.ch1Enable.isChecked():
+                self.chart2.append(QPoint(x1Data[i], y1Data[i]))
+        for i in range(0, len(x2Data)):
+            if self.ch2Enable.isChecked():
+                self.chart3.append(QPoint(x2Data[i], y2Data[i]))
+        for i in range(0, len(x3Data)):
+            if self.ch3Enable.isChecked():
+                self.chart4.append(QPoint(x3Data[i], y3Data[i]))
 
 class TestUi(QWidget):
     def __init__(self):
