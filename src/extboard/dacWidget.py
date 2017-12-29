@@ -13,21 +13,22 @@ class dacWidget(QWidget):
         self.chSelectComb = QComboBox()
         self.chSelectComb.addItems(['APD HV', 'PMT1', 'PMT2', 'PMT3'])
         self.chDigtalValue = QComboBox()
-        self.chDigtalValue.addItems(['0', '500', '1000', '1500', '2000', '2500', '3000', '3500', '4000'])
+        self.chDigtalValue.addItems(['0', '500', '1000', '1500', '2000', '2500', '3000', '3500'])
         self.nextBtn = QPushButton('下一个')
         self.setBtn = QPushButton('设置')
         self.label = QLabel()
 
         self.label.setText(
                             '<font size=14 color="#FF0000">说明：</font> <br />'
-                            'APD HV对应扩展板DAC通道0， 端口是APD.pin7<br />' 
-                            'PMT1对应扩展板DAC通道1， 端口是PMT1.pin1<br />'
-                            'PMT2对应扩展板DAC通道2， 端口是PMT2.pin1<br />'
-                            'PMT3对应扩展板DAC通道3， 端口是PMT3.pin1<br />'
+                            'APD HV对应扩展板DAC通道0， 电压测量端口是APD.pin7<br />' 
+                            'PMT1对应扩展板DAC通道1， 电压测量端口是PMT1.pin1<br />'
+                            'PMT2对应扩展板DAC通道2， 电压测量端口是PMT2.pin1<br />'
+                            'PMT3对应扩展板DAC通道3， 电压测量端口是PMT3.pin1<br />'
                             '<br />'
-                            '每个DAC通道设置9个数字值，记录对应输出模拟值，得到实际的拟合曲线，提供给上位机<br /> '
+                            '每个DAC通道设置8个数字值，记录对应输出模拟值，得到实际的拟合曲线，提供给上位机<br /> '
                             '<font size=12 color="#D2691E">注意：</font> <br />'
-                            '每设置一个APD HV值，需要记录U8.15的模拟电压值，然后去ADC测试页面读取APD FB的值'
+                            '每设置一个APD HV值，需要记录U8.15的模拟电压值，然后去ADC测试页面读取APD FB的值<br />'
+                            'PMTn.pin1 和PMTn.pin5短接，设置DAC数字值后，直接去读ADC反馈值'
                            )
 
         hbox = QHBoxLayout()
@@ -35,7 +36,7 @@ class dacWidget(QWidget):
         hbox.addWidget(self.chDigtalValue)
         hbox.addWidget(self.nextBtn)
         hbox.addWidget(self.setBtn)
-        hbox.addStretch(1)
+        # hbox.addStretch(1)
 
         mainLayout = QVBoxLayout()
         mainLayout.addStretch(1)

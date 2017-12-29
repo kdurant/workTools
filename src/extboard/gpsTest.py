@@ -63,7 +63,7 @@ class GpsTest(QWidget):
         self.label.setText(
                             '<font size=14 color="#FF0000">说明：</font> <br />'
                            '1. 将PC串口pin3连到到GPS串口J1.3 <br />'
-                           '2. 将PC穿了pin2连接到GPS串口J1.1 <br />'
+                           '2. 将PC串口pin2连接到GPS串口J1.1 <br />'
                            '3. 打开串口 <br />'
                            '4. 点击开始测试按钮<br />'
                            '5. 查看测试结果<br />'
