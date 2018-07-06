@@ -29,6 +29,12 @@ class CaptureBoard(QWidget):
         self.stopBtn.setEnabled(False)
         self.dataCheck = self.previewDataUI()
         self.chart = Chart('apd', 'pmt1', 'pmt2', 'pmt3')
+
+        self.infoLabel1 = QLabel("操作步骤:\n"
+                                 "1. 连接设备，打开风扇\n"
+                                 "2. 烧录海洋雷达程序"
+                                 "")
+
         hbox = QVBoxLayout()
         hbox.addWidget(self.udpCore)
         hbox.addWidget(self.startBtn)
@@ -37,6 +43,7 @@ class CaptureBoard(QWidget):
         leftLayout = QVBoxLayout()
         leftLayout.addLayout(hbox)
         leftLayout.addWidget(self.dataCheck)
+        leftLayout.addWidget(self.infoLabel1)
         rightLayout = QVBoxLayout()
         rightLayout.addWidget(self.chart)
 

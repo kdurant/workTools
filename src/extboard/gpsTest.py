@@ -62,8 +62,8 @@ class GpsTest(QWidget):
         self.label = QLabel()
         self.label.setText(
                             '<font size=14 color="#FF0000">说明：</font> <br />'
-                           '1. 将PC串口pin3连到到GPS串口J1.3 <br />'
-                           '2. 将PC串口pin2连接到GPS串口J1.1 <br />'
+                           '1. 将PC串口pin3（PC发送数据引脚)连到到扩展板GPS串口J1.3 <br />'
+                           # '2. 将PC串口pin2（PC接受数据引脚)连接到扩展板GPS串口J1.1 <br />'
                            '3. 打开串口 <br />'
                            '4. 点击开始测试按钮<br />'
                            '5. 查看测试结果<br />'
@@ -155,7 +155,7 @@ class GpsTest(QWidget):
 
     @pyqtSlot(str)
     def processFrame(self, frame):
-        length = int(frame[40:48])
+        length = int(frame[40:48], 16) + 1
         data = frame[48:48+length*2]
 
         if data == self.data:
