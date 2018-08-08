@@ -125,8 +125,8 @@ class ReadDiskWidget(QWidget):
         try:
             file = self.diskReadComb.currentText()
             disk = open(file, 'rb')
-        except:
-            print('error')
+        except PermissionError:
+            QMessageBox.warning(self, "警告", '请以管理员身份运行此程序')
         for unitAddr in range(0, FILE_UNIT-1):
             if unitAddr % 2 == 0:
                 info = self.findFileName(disk, unitAddr)
