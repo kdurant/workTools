@@ -30,7 +30,7 @@ class MotorTest(QWidget):
         self.info.setText(
                             '<font size=14 color="#FF0000">说明：</font> <br />'
                             '1. 短接扩展板电机串口输入输出端(J2.1, J2.3)<br />'
-                            '2. 输入测试数据<br />'
+                            '2. 输入测试数据(数据为2个偶数倍，奇数时最后一个数据会被丢弃)<br />'
                             '3. 点击开始测试按钮，观察下方测试结果<br />'
                           )
 

@@ -1,5 +1,4 @@
 #-*- coding:utf-8 -*-
-#-*- coding:utf-8 -*-
 from PyQt5.QtChart import QChart, QLineSeries, QChartView, QValueAxis, QScatterSeries
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -145,13 +144,9 @@ class Chart(QWidget):
                 if self.ch3Enable.isChecked():
                     self.chart4.append(QPoint(x3Data[i], y3Data[i]))
         except:
-            logging.debug('x0Data is %s' % x0Data)
             logging.debug('y0Data is %s' % y0Data)
-            logging.debug('x1Data is %s' % x1Data)
             logging.debug('y1Data is %s' % y1Data)
-            logging.debug('x2Data is %s' % x2Data)
             logging.debug('y2Data is %s' % y2Data)
-            logging.debug('x3Data is %s' % x3Data)
             logging.debug('y3Data is %s' % y3Data)
             self.chart1.clear()
             self.chart2.clear()

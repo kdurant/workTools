@@ -1,6 +1,8 @@
 #-*- coding:utf-8 -*-
 
 from .misc import str2list
+import logging
+
 class EncodeProtocol():
     def __init__(self, table = {}):
         self.pck_num = 8*'0'
@@ -84,31 +86,27 @@ class DecodeProtocol():
         '''
         data_len = self.getDataLen()
         pck_num = self.getPckNum()
-        data_s = ''
         if self.getCommand() == '80000006':
-            # if self.getPckNum() == 0 :
+            if pck_num == 0:
+                self.ch_all_data = ''   # 可能会丢数据
+                self.ch_all_data += self.frame[48 + 176:560]
+            else:
+                self.ch_all_data += self.frame[48:560]
+
             if self.getDataLen() != 256 : # 这是一次触发数据的最后一帧
                 self.ch_all_data += self.frame[48:48+data_len*2]
-
                 if self.ch_all_data.count('eb90a55a0000') == 1:
                     self.ch0_xdata, self.ch0_ydata, self.ch1_xdata, self.ch1_ydata, self.ch2_xdata, self.ch2_ydata, self.ch3_xdata, self.ch3_ydata = self.getChData(self.ch_all_data)
-                    self.ch_all_data = ''
-                    return True
+                    if self.checkWaveData([self.ch0_xdata, self.ch0_ydata, self.ch1_xdata, self.ch1_ydata, self.ch2_xdata, self.ch2_ydata, self.ch3_xdata, self.ch3_ydata]):
+                        self.ch_all_data = ''
+                        return True
+                    else:
+                        self.ch_all_data = ''
+                        return False
                 else:
                     self.ch_all_data = ''
                     return False
-            else:
-                if self.getPckNum() == 0:
-                    self.ch_all_data += self.frame[48 + 176:560]
-                else:
-                    self.ch_all_data += self.frame[48:560]
 
-        else:   # 如果一直上传
-            self.cnt = 0
-            if self.cnt > 2 and pck_num == 0:
-                return True
-            else:
-                return False
 
     def getChData(self, data):
         pos = data.find('eb90a55a0000')
@@ -135,3 +133,23 @@ class DecodeProtocol():
         ch3_ydata = str2list(data_s, 4)
 
         return [ch0_xdata, ch0_ydata, ch1_xdata, ch1_ydata, ch2_xdata, ch2_ydata, ch3_xdata, ch3_ydata]
+
+    def checkWaveData(self, data):
+        status = len(data[0]) == len(data[1]) == len(data[2]) == len(data[3]) == len(data[4]) == len(data[5]) == len(data[6]) == len(data[7])
+        logging.debug('This is debug message %s' % status)
+        if not status:
+            logging.debug('current error data is %s' % self.ch_all_data)
+            return False
+        if max(data[1]) > 1023:
+            logging.critical('ch0_ydata is %s' % data[1])
+            return False
+        if max(data[3]) > 1023:
+            logging.critical('ch1_ydata is %s' % data[3])
+            return False
+        if max(data[5]) > 1023:
+            logging.critical('ch2_ydata is %s' % data[5])
+            return False
+        if max(data[7]) > 1023:
+            logging.critical('ch3_ydata is %s' % data[7])
+            return False
+        return True

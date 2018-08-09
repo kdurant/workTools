@@ -6,13 +6,6 @@ import logging
 # 如果子类定义了构造函数，而没有调用父类构造函数
 # 将不具备父类的所有属性（包括使用到父类属性的父类方法）
 
-def str2list(s, width):
-    '''将字符串按照指定宽度截取成列表，且列表数据转换为10进制'''
-    if len(s) % width == 0:
-        return [int(s[x:x+width], 16) for x in range(0, len(s), width)]
-    else:
-        print('hello world')
-
 def find_all(string, sub_str):
     return [i for i in range(len(string)) if s[i:].startswith(sub_str)]
 

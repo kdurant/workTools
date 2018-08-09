@@ -3,9 +3,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 import sys
-# import logging
 
 from binascii import a2b_hex, b2a_hex
+# from src import EncodeProtocol, DecodeProtocol, Chart, UdpCore
 from src import *
 import datetime
 
@@ -29,6 +29,12 @@ class CaptureBoard(QWidget):
         self.stopBtn.setEnabled(False)
         self.dataCheck = self.previewDataUI()
         self.chart = Chart('apd', 'pmt1', 'pmt2', 'pmt3')
+
+        self.infoLabel1 = QLabel("操作步骤:\n"
+                                 "1. 连接设备，打开风扇\n"
+                                 "2. 烧录海洋雷达程序"
+                                 "")
+
         hbox = QVBoxLayout()
         hbox.addWidget(self.udpCore)
         hbox.addWidget(self.startBtn)
@@ -37,6 +43,7 @@ class CaptureBoard(QWidget):
         leftLayout = QVBoxLayout()
         leftLayout.addLayout(hbox)
         leftLayout.addWidget(self.dataCheck)
+        leftLayout.addWidget(self.infoLabel1)
         rightLayout = QVBoxLayout()
         rightLayout.addWidget(self.chart)
 
@@ -176,7 +183,7 @@ class CaptureBoard(QWidget):
     def processPendingDatagrams(self, datagram, host, port):
             data = b2a_hex(datagram)
             data = data.decode(encoding = 'utf-8')
-            # print(data)
+            print(data)
             # logging.debug('udp receive data is %s ' % data)
             if data[24:32] == '80000006':
                 # logging.debug('receive data is %s' % data)
@@ -190,17 +197,6 @@ class CaptureBoard(QWidget):
 
     @pyqtSlot(list)
     def updateChart(self, data):
-        pass
-        status = len(data[0]) == len(data[1]) == len(data[2]) == len(data[3]) == len(data[4]) == len(data[5]) == len(data[6]) == len(data[7])
-        logging.debug('This is debug message %s' % status)
-        if max(data[1]) > 1000:
-            logging.critical('data[1] is %s' % data[1])
-        if max(data[3]) > 1000:
-            logging.critical('data[3] is %s' % data[3])
-        if max(data[5]) > 1000:
-            logging.critical('data[5] is %s' % data[5])
-        if max(data[7]) > 1000:
-            logging.critical('data[7] is %s' % data[7])
         self.chart.data = data
         self.chart.update()
         self.updateChInfo(data)
@@ -220,8 +216,6 @@ class CaptureBoard(QWidget):
         self.ch0_diff_value.setText(str(max(y0Data) - min(y0Data)))
         self.ch1_diff_value.setText(str(max(y1Data) - min(y1Data)))
         self.ch2_diff_value.setText(str(max(y2Data) - min(y2Data)))
-        if max(y2Data) - min(y2Data) >= 20:
-            logging.debug('y2data is %s' % y2Data)
         self.ch3_diff_value.setText(str(max(y3Data) - min(y3Data)))
 
         self.ch0_avr_value.setText(str(sum(y0Data)//len(y0Data)))
