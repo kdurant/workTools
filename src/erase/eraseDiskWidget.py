@@ -23,14 +23,34 @@ class EraseDiskWidget(QWidget):
         self.progress = QProgressBar()
         self.progress.setMaximum(FILE_UNIT-1)
         self.progress.setMinimum(0)
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.label)
+        hbox.addWidget(self.progress)
 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.diskSelectComb)
         mainLayout.addWidget(self.eraseBtn)
-        mainLayout.addWidget(self.label)
-        mainLayout.addWidget(self.progress)
+        mainLayout.addWidget(self.commandGroup())
+        mainLayout.addLayout(hbox)
+        mainLayout.addStretch()
 
         self.setLayout(mainLayout)
+
+    def commandGroup(self):
+        groupBox = QGroupBox('通过FPGA擦除硬盘')
+        self.eraseAllBtn = QPushButton("擦除全部文件名区域")
+        self.eraseDestBtn = QPushButton('擦除指定unit')
+        self.eraseUnitLineEdit = QLineEdit()
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.eraseUnitLineEdit)
+        hbox.addWidget(self.eraseDestBtn)
+        hbox.addWidget(self.eraseAllBtn)
+
+        # vbox = QVBoxLayout()
+        # vbox.addLayout(hbox)
+        groupBox.setLayout(hbox)
+        return groupBox
 
     def eraseFileNameRegion(self):
         reply = QMessageBox.critical(self, 'Critical', '擦除文件名区域', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
