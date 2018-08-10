@@ -15,10 +15,6 @@ class EraseDiskWidget(QWidget):
         self.eraseBtn.clicked.connect(self.eraseFileNameRegion)
 
     def initUI(self):
-        self.diskSelectComb = QComboBox()
-        self.diskSelectComb.addItems(diskInfo())
-        self.eraseBtn = QPushButton('擦除文件名区域')
-
         self.label = QLabel('擦除进度：')
         self.progress = QProgressBar()
         self.progress.setMaximum(FILE_UNIT-1)
@@ -28,15 +24,27 @@ class EraseDiskWidget(QWidget):
         hbox.addWidget(self.progress)
 
         mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.diskSelectComb)
-        mainLayout.addWidget(self.eraseBtn)
-        mainLayout.addWidget(self.commandGroup())
+        mainLayout.addWidget(self.eraseByPcGroup())
+        mainLayout.addWidget(self.eraseByFpgaGroup())
         mainLayout.addLayout(hbox)
         mainLayout.addStretch()
 
         self.setLayout(mainLayout)
 
-    def commandGroup(self):
+    def eraseByPcGroup(self):
+        groupBox = QGroupBox('通过PC擦除硬盘')
+
+        self.diskSelectComb = QComboBox()
+        self.diskSelectComb.addItems(diskInfo())
+        self.eraseBtn = QPushButton('擦除文件名区域')
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.diskSelectComb)
+        layout.addWidget(self.eraseBtn)
+        groupBox.setLayout(layout)
+        return groupBox
+
+    def eraseByFpgaGroup(self):
         groupBox = QGroupBox('通过FPGA擦除硬盘')
         self.eraseAllBtn = QPushButton("擦除全部文件名区域")
         self.eraseDestBtn = QPushButton('擦除指定unit')
