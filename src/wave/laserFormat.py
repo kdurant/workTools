@@ -9,15 +9,7 @@ import logging
 def find_all(string, sub_str):
     return [i for i in range(len(string)) if s[i:].startswith(sub_str)]
 
-def generate_x_coor(start_pos, length):
-    '''给定起始位置，和长度，生成x轴的坐标'''
-    '''start_pos: 10进制， length: 10进制'''
-    l = []
-    for i in range(length):
-        l.append(i+start_pos)
-    return l
-
-class OceanFormat (object):
+class LaserFormat (object):
     def __init__(self):  #构造方法
         self.data = ''
         self.trg = 0
@@ -102,6 +94,11 @@ class OceanFormat (object):
         self.len_error = []
 
     def setData(self, data, trg):
+        '''
+        :param data: 一次采集的全部数据
+        :param trg:
+        :return:
+        '''
         if data:
             self.data = data
         self.trg = trg
@@ -151,7 +148,96 @@ class OceanFormat (object):
     def get_wave_len(self):
         self.wave_len = str((int(self.data[112:120], 16)))
 
-    def getChData(self, flag):
+    def getChData(self, type='land'):
+        if type == 'land':
+            return self.getLandData()
+        else:
+            return self.getOeacnData()
+
+    def getLandData(self):
+        pos = 176
+        first_start_pos = int(self.data[pos:pos + 4], 16)
+        first_pick_len = int(self.data[pos + 4:pos + 8], 16)
+        X0data = [i + first_start_pos for i in range(first_pick_len)]
+
+        pos = pos + 8
+        first_data_string = self.data[pos:pos + first_pick_len * 4]
+        Y0data = str2list(first_data_string, 4)
+
+        try:
+            pos = pos + first_pick_len * 4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            X1data = [i + second_start_pos for i in range(second_pick_len)]
+            print(X1data)
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            Y1data = str2list(second_data_string, 4)
+        except IndexError:
+            pass
+
+        try:
+            pos = pos + second_pick_len*4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            tmp = [i + second_start_pos for i in range(second_pick_len)]
+            X1data = list(set(X1data + tmp))
+            X1data.sort()
+
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            tmp = str2list(second_data_string, 4)
+            Y1data = Y1data + tmp
+        except IndexError:
+            pass
+        try:
+            pos = pos + second_pick_len*4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            tmp = [i + second_start_pos for i in range(second_pick_len)]
+            X1data = list(set(X1data + tmp))
+            X1data.sort()
+
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            tmp = str2list(second_data_string, 4)
+            Y1data = Y1data + tmp
+        except IndexError:
+            pass
+        try:
+            pos = pos + second_pick_len*4
+            second_start_pos = int(self.data[pos:pos + 8], 16)
+            second_pick_len = 24
+            tmp = [i + second_start_pos for i in range(second_pick_len)]
+            X1data = list(set(X1data + tmp))
+            X1data.sort()
+
+            pos = pos + 8
+            second_data_string = self.data[pos:pos + second_pick_len*4]
+            tmp = str2list(second_data_string, 4)
+            Y1data = Y1data + tmp
+        except IndexError:
+            pass
+
+        return [X0data, Y0data, X1data, Y1data, X0data, Y0data, X0data, Y0data]
+
+    def getOeacnData(self):
+        l = []
+        Xdata, Ydata = self.getOeacnChData('eb90a55a0000')
+        l.append(Xdata)
+        l.append(Ydata)
+        Xdata, Ydata = self.getOeacnChData('eb90a55a0f0f')
+        l.append(Xdata)
+        l.append(Ydata)
+        Xdata, Ydata = self.getOeacnChData('eb90a55af0f0')
+        l.append(Xdata)
+        l.append(Ydata)
+        Xdata, Ydata = self.getOeacnChData('eb90a55affff')
+        l.append(Xdata)
+        l.append(Ydata)
+        return l
+
+    def getOeacnChData(self, flag='eb90a55a0000'):
         '''
         1. 找到第一段数据的起始位置，和数据长度
 
@@ -172,7 +258,7 @@ class OceanFormat (object):
             first_pick_len = int(self.data[pos+4:pos+8], 16)
 
             # 2. 根据长度和起始位置，获得第一段数据的x轴坐标
-            Xdata = generate_x_coor(first_start_pos, first_pick_len)
+            Xdata = [ i+first_start_pos for i in range(first_pick_len)]
 
             # 3a. 得到第一段数据的字符串格式
             pos = index + 20
@@ -185,7 +271,7 @@ class OceanFormat (object):
             pos = index + (10+first_pick_len*2)*2
             second_start_pos = int(self.data[pos:pos+4], 16)
             second_pick_len = int(self.data[pos+4:pos+8], 16)
-            Xdata = Xdata + generate_x_coor(second_start_pos, second_pick_len)
+            Xdata = Xdata + [ i+second_start_pos for i in range(second_pick_len)]
 
             pos = pos+8
             second_data_string = self.data[pos : pos+second_pick_len*4]
@@ -193,6 +279,7 @@ class OceanFormat (object):
             return Xdata, Ydata
         else:
             return [], []
+
 
     def analyze(self):
         self.getGPSWeek()

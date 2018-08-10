@@ -3,10 +3,10 @@ import binascii
 
 from src.common.chart import Chart
 from ..wave.laserConfig import *
-from ..wave.oceanFormat import OceanFormat
+from ..wave.laserFormat import LaserFormat
 from ..wave.selectFileUI import *
 
-ocean = OceanFormat()
+laserWave = LaserFormat()
 
 class LaserDataAnaylze(QObject):
     updateCapNum = pyqtSignal(int)
@@ -15,9 +15,10 @@ class LaserDataAnaylze(QObject):
         super(LaserDataAnaylze, self).__init__()
         self.runFlag = False
 
-    def setFile(self, file):
+    def setFile(self, file, type = 'land'):
         self.file = file
         self.f = open(self.file, 'rb')
+        self.fileType = type
 
     def configPara(self, runFlag=True, intervalTime=100):
         self.runFlag = runFlag
@@ -37,26 +38,14 @@ class LaserDataAnaylze(QObject):
                 1. 找到head后发送数据去分析
                 2. 清除列表内容
                 '''
-                if text == ocean.head and capLaserData:
-                    ocean.setData(capLaserData, curCapNum)   #
+                if text == laserWave.head and capLaserData:
+                    laserWave.setData(capLaserData, curCapNum)   #
                     if capLaserData:
-                        l = []
-                        Xdata, Ydata = ocean.getChData('eb90a55a0000')
-                        l.append(Xdata)
-                        l.append(Ydata)
-                        Xdata, Ydata = ocean.getChData('eb90a55a0f0f')
-                        l.append(Xdata)
-                        l.append(Ydata)
-                        Xdata, Ydata = ocean.getChData('eb90a55af0f0')
-                        l.append(Xdata)
-                        l.append(Ydata)
-                        Xdata, Ydata = ocean.getChData('eb90a55affff')
-                        l.append(Xdata)
-                        l.append(Ydata)
+                        l = laserWave.getChData(self.fileType)
                         self.updateCapData.emit(l)
                         QThread.msleep(self.intervalTime)
                     capLaserData = ''
-                    capLaserData = ocean.head + capLaserData
+                    capLaserData = laserWave.head + capLaserData
                     curCapNum += 1
                     # if curCapNum % 100 == 0:      # 防止一直发送，阻塞主UI
                     self.updateCapNum.emit(curCapNum)
@@ -128,7 +117,10 @@ class WaveTop(QWidget):
             self.laserFile = dlg.selectedFiles()[0]
             self.isLoadFile = True
             # self.configThreadSignal.emit()
-            self.analyze.setFile(self.laserFile)
+            if self.selectFileUI.landRbtn.isChecked():
+                self.analyze.setFile(self.laserFile, 'land')
+            else:
+                self.analyze.setFile(self.laserFile, 'ocean')
         else:
             self.isLoadFile = False
 
