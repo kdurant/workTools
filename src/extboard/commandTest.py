@@ -49,6 +49,9 @@ class CommandTest(QWidget):
         self.initUI()
 
         self.sendBtn.clicked.connect(self.configFrame)
+        # self.commandComb.currentIndexChanged.connect(self.setDefaultPara)
+        # self.commandComb.currentTextChanged.connect(self.setDefaultPara)
+
     def initUI(self):
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.commandGroup())
@@ -102,6 +105,14 @@ class CommandTest(QWidget):
         print(frame)
         self.packetFrameDone.emit(frame)
 
+    @pyqtSlot()
+    def setDefaultPara(self):
+        print(self.commandComb.currentIndex())
+        print(self.commandComb.currentText())
+
+        index = self.commandComb.currentText()
+        print(self.commandTable[index])
+        # if(self.commandComb)
 
 if __name__ == "__main__":
     import sys
