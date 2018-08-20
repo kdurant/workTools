@@ -11,6 +11,7 @@ class Top(QMainWindow):
 
         self.initUI()
         self.setWindowTitle('测试工具')
+        self.setWindowIcon(QIcon('images/icon.svg'))
         self.resize(QSize(1000, 800))
 
         self.config = {
