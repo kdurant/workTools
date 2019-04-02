@@ -72,14 +72,18 @@ class autoTest(QWidget):
         self.startTestBtn.clicked.connect(self.process)
         pass
 
+    def send_data(self, mode, data):
+        pass
+
     @pyqtSlot()
     def process(self):
         start_line = 4
         start_col = 2
         for line in range(4, 90):
-            line_context = self.table.row(line)
-            if line_context[2] == 'empty:\'\'':
-                print('----------------')
+            line_context = self.table.row_values(line)
+            if line_context[2] == '':
+                pass
+                # print('----------------')
             else:
                 print(line_context[2])
 
