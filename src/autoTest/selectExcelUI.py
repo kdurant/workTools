@@ -30,9 +30,9 @@ class SelectExcelUI(QWidget):
         groupBox.setLayout(mainLayout)
         return groupBox
 
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    ui = SelectExcelUI()
-    ui.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     import sys
+#     app = QApplication(sys.argv)
+#     ui = SelectExcelUI()
+#     ui.show()
+#     sys.exit(app.exec_())

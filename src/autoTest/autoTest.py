@@ -4,53 +4,34 @@ from PyQt5.QtGui import *
 from PyQt5.QtNetwork import QUdpSocket, QHostAddress
 import sys
 import xlrd
-
-class SelectExcelUI(QWidget):
-    def __init__(self, parent=None):
-        super(SelectExcelUI, self).__init__(parent)
-
-        self.sendMode = ''
-        self.recvMode = ''
-        self.sendData = ''
-        self.recvData = ''
-
-        group = self.groupBox()
-
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(group)
-        mainLayout.addStretch(1)
-
-        self.setLayout(mainLayout)
-
-    def groupBox(self):
-        groupBox = QGroupBox('文件选择')
-
-        self.loadFileBtn = QPushButton('选择文件')
-        self.nameLabel= QLabel('file_name')
-
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.loadFileBtn)
-        mainLayout.addWidget(self.nameLabel)
-
-        groupBox.setLayout(mainLayout)
-        return groupBox
+from binascii import a2b_hex, b2a_hex
+# from .tcpServer import TcpServer
+from tcpClient import TcpClient
+from serialWidget import SerialWidget
+from selectExcelUI import SelectExcelUI
 
 
-######################################################################
 class autoTest(QWidget):
     packetFrameDone = pyqtSignal([str])
     def __init__(self):
         super(autoTest, self).__init__()
+
         self.resize(QSize(1200, 600))
         self.initUI()
         self.signalSlot()
+        self.expect_data = ''
+        self.real_recv_data = ''
 
     def initUI(self):
         self.loadFileUI = SelectExcelUI()
+        self.tcpClient = TcpClient()
+        self.serialInfo = SerialWidget()
 
         self.startTestBtn = QPushButton("开始测试")
         hbox = QVBoxLayout()
         hbox.addWidget(self.loadFileUI)
+        hbox.addWidget(self.tcpClient)
+        hbox.addWidget(self.serialInfo)
         hbox.addWidget(self.startTestBtn)
 
         leftLayout = QVBoxLayout()
@@ -70,23 +51,32 @@ class autoTest(QWidget):
         # self.loadFileBtn.clicked.connect(self.getFile)
         self.loadFileUI.loadFileBtn.clicked.connect(self.getFile)
         self.startTestBtn.clicked.connect(self.process)
+        self.serialInfo.serialDataReady[bytes].connect(self.anaylzeUartData)
         pass
 
     def send_data(self, mode, data):
-        pass
+
+        QThread.msleep(1000)
+
+        print('hello world')
+        # print(self.real_recv_data)
+        # if data.find('\n') == -1:
+        #     print('use {0} send ------------{1}'.format(mode, data))
+        # else:
+        #     for line in data.split('\n'):
+        #         print('use {0} send ~~~~~~~~~~~~~{1}'.format(mode, line))
+        # pass
 
     @pyqtSlot()
     def process(self):
         start_line = 4
         start_col = 2
-        for line in range(4, 90):
+        for line in range(4, 100):
             line_context = self.table.row_values(line)
             if line_context[2] == '':
                 pass
-                # print('----------------')
             else:
-                print(line_context[2])
-
+                self.send_data(line_context[2], line_context[3])
 
     @pyqtSlot()
     def getFile(self):
@@ -103,6 +93,16 @@ class autoTest(QWidget):
         else:
             self.isLoadFile = False
 
+    @pyqtSlot(bytes)
+    def anaylzeUartData(self, recvData):
+        self.real_recv_data += b2a_hex(recvData).decode('utf8')
+        # print(self.real_recv_data)
+
+
+    def queryStatus(self):
+        if(self.tcpServer.linkRbtn.isChecked()):
+            print(self.tcpServer.currentStatus())
+        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
