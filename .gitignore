@@ -5,6 +5,7 @@ __pycache__
 
 *.txt
 *.bin
+*.pyc
 
 tmp*
 test*
@@ -19,3 +20,5 @@ dist
 *.log
 *.spec
 *.exe
+*.csv
+*.html
