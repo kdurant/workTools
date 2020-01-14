@@ -1,27 +1,30 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from binascii import b2a_hex, a2b_hex
 from ..common.misc import *
 import datetime
+import os
 
 FILE_UNIT = 0x5000
 
 
 class WriteData(QObject):
     fileWriteDone = pyqtSignal()
+
     def __init__(self):
         super(WriteData, self).__init__()
         self.currentAddr = 0
 
-    def config(self, diskName, item):
+    def config(self, diskName, filePath, item):
         self.diskName = diskName
+        self.filePath = filePath
         self.items = item
         pass
 
     def saveFile(self):
-        fileName = self.items[0].text()
+        fileName = self.filePath + "/" + self.items[0].text()
         fileStartUnit = int(self.items[1].text(), 16)
         fileEndUnit = int(self.items[2].text(), 16)
 
@@ -37,6 +40,7 @@ class WriteData(QObject):
         file.close()
         disk.close()
         self.fileWriteDone.emit()
+
 
 class ReadDiskWidget(QWidget):
     fileInfoReady = pyqtSignal(list)
@@ -74,12 +78,12 @@ class ReadDiskWidget(QWidget):
         mainLayout.setStretchFactor(leftFrame, 2)
         mainLayout.setStretchFactor(rightFrame, 5)
 
-
         self.setLayout(mainLayout)
+
     def ctrlUI(self):
         self.diskReadComb = QComboBox()
         self.diskReadComb.addItems(diskInfo())
-        self.anaylzeBtn = QPushButton('分析有效文件')
+        self.anaylzeBtn = QPushButton('检索有效文件')
         self.saveBtn = QPushButton('保存')
 
         self.label = QLabel('文件写入进度：')
@@ -110,7 +114,8 @@ class ReadDiskWidget(QWidget):
 
     def fileInfoUI(self):
         self.table = QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(['文件名', '起始unit', '结束unit', '文件大小'])
+        self.table.setHorizontalHeaderLabels(
+            ['文件名', '起始unit', '结束unit', '文件大小'])
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         vbox = QVBoxLayout()
@@ -127,6 +132,7 @@ class ReadDiskWidget(QWidget):
             disk = open(file, 'rb')
         except PermissionError:
             QMessageBox.warning(self, "警告", '请以管理员身份运行此程序')
+
         for unitAddr in range(0, FILE_UNIT-1):
             if unitAddr % 2 == 0:
                 info = self.findFileName(disk, unitAddr)
@@ -145,7 +151,8 @@ class ReadDiskWidget(QWidget):
         if data.find(b'\xff') == -1:
             fileName = data.decode('utf8')
             fileName = fileName.replace('\0', '')
-            data = readSector(disk, (addr+ 1)*32 , data_len=8, mode='rb')  # 读取文件起始地址，结束地址信息
+            data = readSector(disk, (addr + 1)*32, data_len=8,
+                              mode='rb')  # 读取文件起始地址，结束地址信息
             fileStartAddr = b2a_hex(data[:4]).decode()
             fileEndAddr = b2a_hex(data[4:8]).decode()
             fileInfo = [fileName, fileStartAddr, fileEndAddr]
@@ -172,19 +179,40 @@ class ReadDiskWidget(QWidget):
 
     @pyqtSlot()
     def saveFile(self):
+        filePath = self.getDirectory()
+
         items = self.table.selectedItems()
+
         if items:
             self.progress.setMinimum(int(items[1].text(), 16))
             self.progress.setMaximum(int(items[2].text(), 16)-1)
-            self.writeFile.config(self.diskReadComb.currentText(), items)
+            self.writeFile.config(
+                self.diskReadComb.currentText(), filePath, items)
             self.startWriteFile.emit()
+            self.saveBtn.setEnabled(False)
         else:
             QMessageBox.warning(self, '警告', '请选择需要写入的文件')
+
+    def getDirectory(self):
+        return QFileDialog.getExistingDirectory(self,
+                                                "选取文件夹",
+                                                os.getcwd())  # 起始路径
+
+    def getFile(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.AnyFile)
+        dlg.setFilter(QDir.Files)
+
+        if dlg.exec_():
+            return dlg.selectedFiles()[0]
+        else:
+            return ""
 
     @pyqtSlot()
     def fileHint(self):
         self.timeLine.setText(str(self.writeFile.writeFileTime))
         QMessageBox.information(self, '信息', '文件写入成功')
+        self.saveBtn.setEnabled(True)
 
     @pyqtSlot()
     def setProgress(self):
